@@ -1,0 +1,23 @@
+.chat-container {
+    width: 80%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#chat-window {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+#messages {
+    height: 300px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.hidden {
+    display: none;
+}
