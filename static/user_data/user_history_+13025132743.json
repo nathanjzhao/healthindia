@@ -1,0 +1,27 @@
+{
+  "entries": [
+    {
+      "09/14/2024 05:32PM": [
+        "- User experiencing shortness of breath and fatigue",
+        "- User is experiencing fatigue",
+        "- User experiences extreme dizziness.",
+        "- User has experienced high blood pressure."
+      ]
+    }
+  ],
+  "fname": "",
+  "lname": "",
+  "age": "",
+  "gender": "",
+  "height": "",
+  "weight": "",
+  "current_call": [
+    "- User is 300 pounds.",
+    "- Experiencing shortness of breath.",
+    "- User reports experiencing tightness in the upper breast area.",
+    "- User denies recent exposure to respiratory irritants or allergens.",
+    "- The user is requesting an explanation of what is meant by \"halogen.\"",
+    "- User's response does not directly address the symptoms asked about.",
+    "- The response suggests negativity or unlikely recurrence but is ambiguous without further context."
+  ]
+}

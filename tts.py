@@ -4,6 +4,8 @@ import requests
 import boto3
 from botocore.exceptions import NoCredentialsError
 from botocore.config import Config
+import io
+import wave
 
 load_dotenv() 
 
@@ -25,8 +27,6 @@ s3_client = boto3.client(
     aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
     config=my_config
 )
-
-text = "Hello, thank you for calling telemedicine, how can I help you?"
 
 def text_to_speech(text):
     """
@@ -55,6 +55,11 @@ def text_to_speech(text):
     # Step 1: Get the audio data from Eleven Labs
     response = requests.post(url, json=data, headers=headers)
 
+    # Check if the response is successful and contains audio data
+    if response.status_code != 200 or response.headers.get("Content-Type") != "audio/mpeg":
+        print("Failed to retrieve valid audio data.")
+        return None
+
     # Step 2: Save the audio data as binary data in memory
     binary_audio_data = b''  # Start with an empty binary string
     for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
@@ -71,6 +76,15 @@ def text_to_speech(text):
             ContentType='audio/mpeg'
         )
         print(f"File uploaded successfully to https://{S3_BUCKET_NAME}.s3.{S3_REGION}.amazonaws.com/{S3_OBJECT_NAME}")
+
+        # print("binary_audio_data: ", binary_audio_data)
+        # Calculate the length of the audio file
+        # with io.BytesIO(binary_audio_data) as audio_file:
+        #     with wave.open(audio_file, 'rb') as wave_file:
+        #         frame_rate = wave_file.getframerate()
+        #         num_frames = wave_file.getnframes()
+        #         duration = num_frames / frame_rate  # Duration in seconds
+        #         print(f"Length of audio file: {duration} seconds")
 
         # Generate a pre-signed URL for the uploaded file
         presigned_url = s3_client.generate_presigned_url(
