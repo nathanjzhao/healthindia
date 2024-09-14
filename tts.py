@@ -1,7 +1,11 @@
+from dotenv import load_dotenv
+import os
 import requests
 import boto3
 from botocore.exceptions import NoCredentialsError
 from botocore.config import Config
+
+load_dotenv() 
 
 # AWS S3 bucket details
 S3_BUCKET_NAME = 'jhubuckethophacks'
@@ -15,7 +19,12 @@ my_config = Config(
 )
 
 # AWS credentials are assumed to be configured via environment or AWS CLI
-s3_client = boto3.client('s3', config=my_config)
+s3_client = boto3.client(
+    's3',
+    aws_access_key_id=os.getenv('AWS_ACCESS_KEY_ID'),
+    aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'),
+    config=my_config
+)
 
 text = "Hello, thank you for calling telemedicine, how can I help you?"
 
@@ -26,12 +35,12 @@ def text_to_speech(text):
     """
     # Eleven Labs API setup
     CHUNK_SIZE = 1024
-    url = "https://api.elevenlabs.io/v1/text-to-speech/fKe9ZDqkOtN9VMLdbWJ5"
+    url = os.getenv('ELEVEN_API_URL')  # Use environment variable
 
     headers = {
         "Accept": "audio/mpeg",
         "Content-Type": "application/json",
-        "xi-api-key": "sk_b459dc20d700919e6ccbaefd2f5297498f8f653669ee7f7e"
+        "xi-api-key": os.getenv('ELEVEN_API_KEY')  # Use environment variable
     }
 
     data = {
@@ -62,6 +71,14 @@ def text_to_speech(text):
             ContentType='audio/mpeg'
         )
         print(f"File uploaded successfully to https://{S3_BUCKET_NAME}.s3.{S3_REGION}.amazonaws.com/{S3_OBJECT_NAME}")
+
+        # Generate a pre-signed URL for the uploaded file
+        presigned_url = s3_client.generate_presigned_url(
+            'get_object',
+            Params={'Bucket': S3_BUCKET_NAME, 'Key': S3_OBJECT_NAME},
+            ExpiresIn=3600  # URL expires in 1 hour
+        )
+        return presigned_url
     except NoCredentialsError:
         print("Credentials not available. Please check your AWS credentials.")
     except Exception as e:
