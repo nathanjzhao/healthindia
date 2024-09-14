@@ -1,6 +1,6 @@
 .env
 venv/
 
+node_modules/
 *.mp3
 *.wav
-
