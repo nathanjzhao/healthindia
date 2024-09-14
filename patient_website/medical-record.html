@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Record Summary</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -11,41 +10,41 @@
     <button id="back-button">Back</button>
 
     <div class="container">
-        <h1>Medical Record Summary</h1>
+        <h1 id="medical-record-title">Medical Record Summary</h1>
 
         <div class="patient-info">
-            <h2>Patient Information</h2>
+            <h2 id="patient-info-heading">Patient Information</h2>
             <table>
                 <tr>
-                    <td><strong>First Name</strong></td>
+                    <td><strong id="first-name-label">First Name</strong></td>
                     <td id="first-name">Gopalaswami</td>
-                    <td><strong>Last Name</strong></td>
+                    <td><strong id="last-name-label">Last Name</strong></td>
                     <td id="last-name">Ramanathan Ramachandra</td>
                 </tr>
                 <tr>
-                    <td><strong>Date of Birth</strong></td>
+                    <td><strong id="dob-label">Date of Birth</strong></td>
                     <td id="dob">03/14/1921</td>
-                    <td><strong>Gender</strong></td>
+                    <td><strong id="gender-label">Gender</strong></td>
                     <td id="gender">Male</td>
                 </tr>
                 <tr>
-                    <td><strong>Height (cm)</strong></td>
+                    <td><strong id="height-label">Height (cm)</strong></td>
                     <td id="height">172 cm</td>
-                    <td><strong>Weight (kg)</strong></td>
+                    <td><strong id="weight-label">Weight (kg)</strong></td>
                     <td id="weight">88 kg</td>
                 </tr>
             </table>
         </div>
 
         <div class="record-summary">
-            <h2>Chronological Medical Records Summary</h2>
+            <h2 id="record-summary-heading">Chronological Medical Records Summary</h2>
             <table class="record-table">
                 <thead>
                     <tr>
-                        <th>Date/Time</th>
-                        <th>Reference/Page No.</th>
-                        <th>Provider</th>
-                        <th>Encounter Summary</th>
+                        <th id="date-time-header">Date/Time</th>
+                        <th id="reference-header">Reference/Page No.</th>
+                        <th id="provider-header">Provider</th>
+                        <th id="encounter-summary-header">Encounter Summary</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -69,7 +68,7 @@
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
-        <p>Loading...</p>
+        <p id="loading-text">Loading...</p>
     </div>
 
     <script src="script.js"></script>

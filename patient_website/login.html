@@ -2,46 +2,46 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Medical Records</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<!-- Back Button -->
+    <!-- Back Button -->
+    <button id="language-back-button">Back</button>
+
     <div class="login-container">
         <!-- Logo Image -->
-        <!-- Use <picture> for WebP with fallback -->
-            <picture>
-                <source srcset="images/jhu_med.webp" type="image/webp">
-                <img src="images/jhu_med.png" alt="Company Logo" class="logo">
-            </picture>
+        <picture>
+            <source srcset="images/jhu_med.webp" type="image/webp">
+            <img src="images/jhu_med.png" alt="Company Logo" class="logo">
+        </picture>
 
-        <h1>Access Medical Records</h1>
+        <h1 id="login-title">Access Medical Records</h1>
 
         <!-- Container for Side-by-Side Forms -->
         <div class="forms-container">
             <!-- Login Form -->
             <div class="form-section">
-                <h2>Login</h2>
+                <h2 id="login-heading">Login</h2>
                 <form id="login-form">
-                    <label for="username">Username/ID:</label>
-                    <input type="text" id="username" name="username" required placeholder="Enter your username" autocomplete="off">
+                    <label for="username" id="username-label">Username/ID:</label>
+                    <input type="text" id="username" name="username" required placeholder="" autocomplete="off">
 
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="off">
+                    <label for="password" id="password-label">Password:</label>
+                    <input type="password" id="password" name="password" required placeholder="" autocomplete="off">
 
-                    <button type="submit">Log In</button>
+                    <button type="submit" id="login-button">Log In</button>
                 </form>
             </div>
 
             <!-- Phone Number Validation Form -->
             <div class="form-section">
-                <h2>Call Telemedicine Hub</h2>
+                <h2 id="call-heading">Call Telemedicine Hub</h2>
                 <form method="post" onsubmit="return validatePhoneNumber()">
-                    <label for="to_number">Phone Number:</label>
-                    <input type="text" name="to_number" id="to_number" placeholder="Enter phone number">
+                    <label for="to_number" id="phone-label">Phone Number:</label>
+                    <input type="text" name="to_number" id="to_number" placeholder="">
 
-                    <input type="submit" value="Call">
+                    <input type="submit" value="" id="call-button">
                 </form>
             </div>
         </div>
@@ -50,29 +50,9 @@
     <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
-        <p>Logging in...</p>
+        <p id="loading-text">Logging in...</p>
     </div>
 
     <script src="script.js"></script>
-    <script>
-        // Phone number validation function
-        function validatePhoneNumber() {
-            var phoneNumber = document.getElementById('to_number').value;
-            var regex = /^\+?\d{10,15}$/;  // Corrected regex for E.164 format
-            if (!regex.test(phoneNumber)) {
-                alert("Invalid phone number format. Please use E.164 format.");
-                return false;
-            }
-            return true;
-        }
-
-        // Hide loading screen on page show (including back navigation)
-        window.addEventListener('pageshow', function(event) {
-            var loadingScreen = document.getElementById('loading-screen');
-            if (loadingScreen) {
-                loadingScreen.style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>
