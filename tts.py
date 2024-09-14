@@ -35,20 +35,20 @@ def text_to_speech(text):
     """
     # Eleven Labs API setup
     CHUNK_SIZE = 1024
-    url = os.getenv('ELEVEN_API_URL')  # Use environment variable
+    url = os.getenv('ELEVEN_API_URL')
 
     headers = {
         "Accept": "audio/mpeg",
         "Content-Type": "application/json",
-        "xi-api-key": os.getenv('ELEVEN_API_KEY')  # Use environment variable
+        "xi-api-key": os.getenv('ELEVEN_API_KEY')
     }
 
     data = {
         "text": text,
         "model_id": "eleven_monolingual_v1",
         "voice_settings": {
-            "stability": 0.5,
-            "similarity_boost": 0.5
+            "stability": 0.7,
+            "similarity_boost": 0.8
         }
     }
 
@@ -83,4 +83,3 @@ def text_to_speech(text):
         print("Credentials not available. Please check your AWS credentials.")
     except Exception as e:
         print(f"Failed to upload file: {e}")
-pass

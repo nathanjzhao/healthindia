@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, request, url_for
+from flask import Flask, request, render_template, jsonify, Response, stream_with_context
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.rest import Client
 from dotenv import load_dotenv
@@ -8,6 +8,8 @@ import requests
 import time
 from flask_cors import CORS  
 from tts import text_to_speech
+import json
+from langdetect import detect
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -46,7 +48,21 @@ def generate_openai_response(transcript):
         return response.json()['choices'][0]['message']['content']
     return None
 
+# Add this to your global variables
+conversation_history = {}
+
+@app.route("/get_conversation", methods=['GET'])
+def get_conversation():
+    call_sid = request.args.get('call_sid')
+    if call_sid in conversation_history:
+        return jsonify(conversation_history[call_sid])
+    return jsonify([])
+
 @app.route("/", methods=['GET', 'POST'])
+def index():
+    return render_template('index.html')
+
+@app.route("/login", methods=['GET', 'POST'])  # Updated route to /login
 def voice():
     if request.method == 'POST':
         to_number = request.form['to_number']
@@ -70,7 +86,7 @@ def voice():
             else:
                 twiml.say("I'm sorry, I couldn't generate the audio. Let's try again.")
 
-            gather = Gather(input='speech', action=f'{ngrok_url}/handle_input', method='POST', timeout=3)  # Updated action URL
+            gather = Gather(input='speech', action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=2)  # Updated action URL
             twiml.append(gather)
 
             call = client.calls.create(
@@ -78,18 +94,21 @@ def voice():
                 to=to_number,
                 from_=os.getenv('TWILIO_PHONE_NUMBER')
             )
+
             logger.info(f"Initiating call to {to_number}. Call SID: {call.sid}")
-            return f"Calling {to_number}... Call SID: {call.sid}"
+            return render_template('call-progress.html', call_sid=call.sid, to_number=to_number)
         except Exception as e:
             logger.error(f"Failed to create call: {str(e)}")
             return f"Failed to create call: {str(e)}", 500
     
-    return '''
-        <form method="post">
-            Phone Number: <input type="text" name="to_number" id="to_number">
-            <input type="submit" value="Call">
-        </form>
-    '''
+    return render_template('login.html')
+
+    # return '''
+    #     <form method="post">
+    #         Phone Number: <input type="text" name="to_number" id="to_number">
+    #         <input type="submit" value="Call">
+    #     </form>
+    # '''
 
 @app.route("/handle_input", methods=['POST'])
 def handle_input():
@@ -103,33 +122,45 @@ def handle_input():
 
         if not user_input:
             logger.warning("No speech input received")
-            twiml.say("I'm sorry, I didn't catch that. Could you please repeat?")
+            ai_response = "I'm sorry, I didn't catch that. Could you please repeat?"
         else:
             logger.info(f"User input: {user_input}")
-            try:
-                speech_text = generate_openai_response(user_input)
-                logger.info(f"OpenAI response: {speech_text}")
+            
+            # Store user input in conversation history
+            if call_sid not in conversation_history:
+                conversation_history[call_sid] = []
+            conversation_history[call_sid].append({"speaker": "user", "text": user_input})
 
-                if speech_text:
-                    if speech_text.lower() == "stop call":
-                        twiml.say("Thank you for your time. Goodbye!")
+            try:
+                ai_response = generate_openai_response(user_input)
+                logger.info(f"OpenAI response: {ai_response}")
+
+                if ai_response:
+                    if ai_response.lower() == "stop call":
+                        ai_response = "Thank you for your time. Goodbye!"
+                        twiml.say(ai_response)
                         twiml.hangup()
                     else:
-                        # Generate speech file and get S3 URL
-                        s3_url = text_to_speech(speech_text)
+                        s3_url = text_to_speech(ai_response)
                         if s3_url:
                             twiml.play(s3_url)
                         else:
-                            twiml.say("I'm sorry, I couldn't generate the audio. Let's try again.")
+                            ai_response = "I'm sorry, I couldn't generate the audio. Let's try again."
+                            twiml.say(ai_response)
                 else:
-                    twiml.say("I'm sorry, I couldn't generate a response. Let's try again.")
+                    ai_response = "I'm sorry, I couldn't generate a response. Let's try again."
+                    twiml.say(ai_response)
             except requests.exceptions.RequestException as e:
                 logger.error(f"Error calling OpenAI API: {str(e)}")
-                twiml.say("I'm sorry, I'm having trouble thinking right now. Let's try again.")
+                ai_response = "I'm sorry, I'm having trouble thinking right now. Let's try again."
+                twiml.say(ai_response)
+
+            # Store AI response in conversation history
+            conversation_history[call_sid].append({"speaker": "ai", "text": ai_response})
 
         # Always add a new Gather unless we're hanging up
         if 'hangup' not in twiml.verbs:
-            gather = Gather(input='speech', action=f'{ngrok_url}/handle_input', method='POST', timeout=3)
+            gather = Gather(input='speech', action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=2)
             twiml.append(gather)
 
         logger.info(f"Returning TwiML: {twiml}")
@@ -152,13 +183,24 @@ def handle_input():
         twiml.say("I'm sorry, an error occurred. Please try again later.")
         return str(twiml), 500
 
-@app.route("/log_request", methods=['GET', 'POST'])
-def log_request():
-    logger.info(f"Received request: {request.method}")
-    logger.info(f"Headers: {request.headers}")
-    logger.info(f"Form data: {request.form}")
-    logger.info(f"JSON data: {request.json}")
-    return "Request logged", 200
+@app.route('/stream/<call_sid>')
+def stream(call_sid):
+    def event_stream():
+        last_message_index = 0
+        while True:
+            if call_sid in conversation_history:
+                current_messages = conversation_history[call_sid]
+                if last_message_index < len(current_messages):
+                    for message in current_messages[last_message_index:]:
+                        yield f"data: {json.dumps(message)}\n\n"
+                    last_message_index = len(current_messages)
+            time.sleep(0.5)  # Check for new messages every 0.5 seconds
+
+    return Response(stream_with_context(event_stream()), content_type='text/event-stream')
+
+@app.route("/medical-record", methods=['GET', 'POST'])
+def medical_record():
+    return render_template('medical-record.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
