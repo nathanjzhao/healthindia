@@ -9,8 +9,6 @@ import time
 from flask_cors import CORS  
 from tts import text_to_speech
 import json
-from langdetect import detect
-from googletrans import Translator
 from datetime import datetime
 
 # Set up logging
@@ -202,7 +200,8 @@ def stream(call_sid):
     return Response(stream_with_context(event_stream()), content_type='text/event-stream')
 
 # Path to the JSON file
-JSON_FILE = 'medical_record.json'
+JSON_CURR = 'user_history_+12223334444.json'
+JSON_FILE = os.path.join(app.root_path, 'static', 'user_data', JSON_CURR)
 
 # Utility to read the JSON file
 def read_medical_record():
@@ -220,8 +219,7 @@ def add_entry_to_medical_record(new_entries):
     # Read the existing record
     record = read_medical_record()
     # Get the current time
-    current_time = datetime.now().strftime("%m/%d/%Y %I:%M%p")
-    # Add the new entry using the current time as the key
+    current_time = datetime.now().strftime("%m/%d/%Y %I:%M%") # Add the new entry using the current time as the key
     record['entries'].append({current_time: new_entries})
     # Write the updated record back to the JSON file
     write_medical_record(record)

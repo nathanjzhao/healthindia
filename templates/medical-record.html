@@ -49,19 +49,20 @@
                     </tr>
                 </thead>
                 <tbody id="record-entries">
-                    <!-- Loop through the medical record entries -->
-                    {% for entry in record.entries %}
-                        {% for date, summary in entry.items() %}
-                        <tr>
-                            <td>{{ date }}</td>
-                            <td>{{ summary | join('. ') }}</td>
-                        </tr>
+                    {% if record.entries %}
+                        {% for entry in record.entries %}
+                            {% for date, summary in entry.items() %}
+                            <tr>
+                                <td>{{ date }}</td>
+                                <td>{{ summary | join('. ') }}</td>
+                            </tr>
+                            {% endfor %}
                         {% endfor %}
                     {% else %}
                     <tr>
                         <td colspan="2">No medical entries found.</td>
                     </tr>
-                    {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
         </div>
