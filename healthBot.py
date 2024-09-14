@@ -1,105 +1,71 @@
 import os
 import openai
 import pandas as pd
-import numpy as np
 from sklearn import preprocessing
 from sklearn.tree import DecisionTreeClassifier
-from flask import Flask, request, jsonify, render_template
-from flask_cors import CORS
 
-# Initialize Flask application
-app = Flask(__name__)
-CORS(app)
+# Load and preprocess the training data
+try:
+    training = pd.read_csv('data/Training.csv')
+    cols = training.columns[:-1]
+    x = training[cols]
+    y = training['prognosis']
 
-# Set up OpenAI API key from environment variable
+    le = preprocessing.LabelEncoder()
+    le.fit(y)
+    y_encoded = le.transform(y)
+
+    clf = DecisionTreeClassifier().fit(x, y_encoded)
+except Exception as e:
+    print(f"Error loading and processing training data: {str(e)}")  # Debugging line
+
+# Set OpenAI API key (make sure it's correctly set up)
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-# Load and preprocess data
-training = pd.read_csv('Training.csv')
-testing = pd.read_csv('Testing.csv')
+def extract_symptoms(message, symptom_list):
+    symptoms_mentioned = []
+    for symptom in symptom_list:
+        if symptom.lower() in message.lower():
+            symptoms_mentioned.append(symptom)
+    return symptoms_mentioned
 
-cols = training.columns[:-1]
-x = training[cols]
-y = training['prognosis']
-
-le = preprocessing.LabelEncoder()
-le.fit(y)
-y = le.transform(y)
-
-# Train the decision tree classifier
-clf = DecisionTreeClassifier()
-clf = clf.fit(x, y)
-
-@app.route('/')
-def home():
-    return render_template('index.html')
-
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.json
-    user_message = data.get('message')
-    user_info = data.get('userInfo')
-
-    # Call the function from healthBot.py to process the user's message
-    response_text = handle_chat(user_message, user_info)
-    return jsonify({"response": response_text})
-
-
-@app.route('/diagnose', methods=['POST'])
-def diagnose():
-    data = request.json
-    symptoms = data['symptoms']
-    diagnosis = tree_to_code(clf, cols, symptoms)
-    return jsonify({'diagnosis': diagnosis})
-
-def chatgpt_prompt(question, system_message="You are a helpful health assistant interacting with a health diagnosis bot called 'MedBot'."):
+def handle_chat(user_message, user_info, history):
     try:
+        print(f"User message: {user_message}")  # Debugging line
+        print(f"User info: {user_info}")        # Debugging line
+        print(f"History: {history}")            # Debugging line
+
+        symptom_list = cols.tolist()
+        symptoms_mentioned = extract_symptoms(user_message, symptom_list)
+
+        collected_symptoms = user_info.get('symptoms', [])
+        collected_symptoms.extend(symptoms_mentioned)
+        collected_symptoms = list(set(collected_symptoms))
+        user_info['symptoms'] = collected_symptoms
+
+        messages = [
+            {"role": "system", "content": "You are a helpful medical assistant."},
+            {"role": "user", "content": f"User info: {user_info}"},
+            {"role": "user", "content": user_message}
+        ]
+        messages.extend(history)
+
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": system_message},
-                {"role": "user", "content": question}
-            ]
+            messages=messages
         )
-        return response['choices'][0]['message']['content'].strip()
+
+        assistant_message = response['choices'][0]['message']['content'].strip()
+
+        history.append({"role": "user", "content": user_message})
+        history.append({"role": "assistant", "content": assistant_message})
+
+        return {
+            "response": assistant_message,
+            "userInfo": user_info,
+            "history": history
+        }
+
     except Exception as e:
-        print(f"Error with OpenAI API: {e}")
-        return "I couldn't process your request. Please try again."
-def handle_chat(user_message, user_info):
-    # Your logic to process the user message and information
-    # For example, generate a response based on the input
-    age = user_info.get('age')
-    height = user_info.get('height')
-    weight = user_info.get('weight')
-    date = user_info.get('date')
-
-    # Generate a simple response (you can replace this with more complex logic)
-    response_text = f"Received your message: {user_message}. Your info - Age: {age}, Height: {height} cm, Weight: {weight} kg, Date: {date}."
-    
-    return response_text
-
-
-def tree_to_code(tree, feature_names, symptoms):
-    tree_ = tree.tree_
-    feature_name = [
-        feature_names[i] if i != tree.TREE_UNDEFINED else "undefined!"
-        for i in tree_.feature
-    ]
-    
-    def recurse(node, depth):
-        if tree_.feature[node] != tree.TREE_UNDEFINED:
-            name = feature_name[node]
-            if name in symptoms:
-                return recurse(tree_.children_right[node], depth + 1)
-            else:
-                return recurse(tree_.children_left[node], depth + 1)
-        else:
-            return le.inverse_transform(tree_.value[node].argmax(axis=1))[0]
-    
-    return recurse(0, 1)
-
-if __name__ == '__main__':
-    # Ensure the API key is set in the environment before running
-    if not openai.api_key:
-        raise ValueError("OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.")
-    app.run(debug=True)
+        print(f"Error in handle_chat: {str(e)}")  # Debugging line
+        raise

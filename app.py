@@ -1,22 +1,30 @@
 from flask import Flask, request, jsonify
-from healthBot import handle_chat  # Import the function from healthBot.py
-from flask_cors import CORS  # For handling cross-origin requests
+from flask_cors import CORS
+from healthBot import handle_chat
+import os
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for cross-origin requests
 
-# Define the route for the chat API
-@app.route('/chat', methods=['POST'])
+# Configuring CORS to allow requests from your frontend's origin
+CORS(app)
+
+@app.route('/api/chat', methods=['POST'])
 def chat():
-    data = request.json  # Get the JSON data from the request
+    data = request.json
+    print(f"Received data: {data}")  # Debugging line
     user_message = data.get('message')
-    user_info = data.get('userInfo')
+    user_info = data.get('userInfo', {})
+    history = data.get('history', [])
 
-    # Call the function from healthBot.py to process the user's message
-    response_text = handle_chat(user_message, user_info)
-    
-    # Return the response as JSON
-    return jsonify({"response": response_text})
+    try:
+        response = handle_chat(user_message, user_info, history)
+        return jsonify(response)
+    except Exception as e:
+        print(f"Error in chat route: {str(e)}")  # Debugging line
+        return jsonify({"error": f"An internal server error occurred: {str(e)}"}), 500
 
 if __name__ == '__main__':
+    if not os.getenv('OPENAI_API_KEY'):
+        raise ValueError("OpenAI API key not found. Please set the OPENAI_API_KEY environment variable.")
     app.run(debug=True)
+print(f"OpenAI API Key: {os.getenv('OPENAI_API_KEY')}")
