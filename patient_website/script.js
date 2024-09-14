@@ -30,7 +30,16 @@ var translations = {
         referencePage: "Reference/Page No.",
         provider: "Provider",
         encounterSummary: "Encounter Summary",
-        loading: "Loading..."
+        loading: "Loading...",
+        // Medical history entries
+        entry1Date: "02/14/2021 10:00am",
+        entry1Ref: 'Pg 1-3, "Initial Consult Letter"',
+        entry1Provider: "Dr. Aditya Shah, Radiation Oncologist",
+        entry1Summary: "Patient saw Dr. Shah for initial consultation regarding radiation therapy for LHS glioblastoma",
+        entry2Date: "02/17/2021 8:15am",
+        entry2Ref: 'Pg 4, "CT Encounter"',
+        entry2Provider: "CT Team, Radiation Oncology Department",
+        entry2Summary: "Patient reported to CT department but was told she could not be scanned due to COVID-19 staffing issues"
     },
     hi: {
         // index.html
@@ -60,7 +69,16 @@ var translations = {
         referencePage: "संदर्भ/पृष्ठ संख्या",
         provider: "प्रदाता",
         encounterSummary: "मुठभेड़ सारांश",
-        loading: "लोड हो रहा है..."
+        loading: "लोड हो रहा है...",
+        // Medical history entries
+        entry1Date: "14/02/2021 सुबह 10:00 बजे",
+        entry1Ref: 'पृष्ठ 1-3, "प्रारंभिक परामर्श पत्र"',
+        entry1Provider: "डॉ. आदित्य शाह, रेडिएशन ऑन्कोलॉजिस्ट",
+        entry1Summary: "रोगी ने LHS ग्लियोब्लास्टोमा के लिए रेडिएशन थेरेपी के संबंध में प्रारंभिक परामर्श के लिए डॉ. शाह से मुलाकात की",
+        entry2Date: "17/02/2021 सुबह 8:15 बजे",
+        entry2Ref: 'पृष्ठ 4, "सीटी मुठभेड़"',
+        entry2Provider: "सीटी टीम, रेडिएशन ऑन्कोलॉजी विभाग",
+        entry2Summary: "रोगी सीटी विभाग में रिपोर्ट किया लेकिन उन्हें बताया गया कि COVID-19 स्टाफिंग मुद्दों के कारण उन्हें स्कैन नहीं किया जा सकता"
     },
     mr: {
         // index.html
@@ -90,68 +108,18 @@ var translations = {
         referencePage: "संदर्भ/पृष्ठ क्रमांक",
         provider: "प्रदाता",
         encounterSummary: "सामना सारांश",
-        loading: "लोड करत आहे..."
-    },
-    gu: {
-        // index.html
-        selectLanguage: "તમારી ભાષા પસંદ કરો",
-        // login.html
-        accessMedicalRecords: "મેડિકલ રેકોર્ડ્સ ઍક્સેસ કરો",
-        login: "લૉગિન",
-        username: "વપરાશકર્તા નામ/આઈડી:",
-        password: "પાસવર્ડ:",
-        loginButton: "લૉગિન કરો",
-        callTelemedicineHub: "ટેલિમેડિસિન હબને કૉલ કરો",
-        phoneNumber: "ફોન નંબર:",
-        callButton: "કૉલ કરો",
-        loggingIn: "લૉગિન કરી રહ્યું છે...",
-        back: "પાછળ",
-        // medical-record.html
-        medicalRecordSummary: "મેડિકલ રેકોર્ડનો સારાંશ",
-        patientInformation: "રોગીની માહિતી",
-        firstName: "પ્રથમ નામ",
-        lastName: "છેલ્લું નામ",
-        dateOfBirth: "જન્મ તારીખ",
-        gender: "લિંગ",
-        height: "ઊંચાઈ (સેમી)",
-        weight: "વજન (કિગ્રા)",
-        chronologicalSummary: "કાલક્રમ મુજબ મેડિકલ રેકોર્ડ્સનો સારાંશ",
-        dateTime: "તારીખ/સમય",
-        referencePage: "સંદર્ભ/પૃષ્ઠ નંબર",
-        provider: "પ્રદાતા",
-        encounterSummary: "મળવા નો સારાંશ",
-        loading: "લોડ કરી રહ્યું છે..."
-    },
-    ta: {
-        // index.html
-        selectLanguage: "உங்கள் மொழியை தேர்ந்தெடுக்கவும்",
-        // login.html
-        accessMedicalRecords: "மருத்துவ பதிவுகளை அணுகவும்",
-        login: "உள்நுழைய",
-        username: "பயனர்பெயர்/அடையாளம்:",
-        password: "கடவுச்சொல்:",
-        loginButton: "உள்நுழைய",
-        callTelemedicineHub: "தொலைவழி மருத்துவ மையத்தை அழைக்கவும்",
-        phoneNumber: "தொலைபேசி எண்:",
-        callButton: "அழைக்க",
-        loggingIn: "உள்நுழையிறது...",
-        back: "மீண்டும்",
-        // medical-record.html
-        medicalRecordSummary: "மருத்துவ பதிவு சுருக்கம்",
-        patientInformation: "நோயாளி தகவல்",
-        firstName: "முதல் பெயர்",
-        lastName: "கடைசி பெயர்",
-        dateOfBirth: "பிறந்த தேதி",
-        gender: "பாலினம்",
-        height: "உயரம் (செ.மீ)",
-        weight: "எடை (கி.கி)",
-        chronologicalSummary: "காலவரிசைப்படியான மருத்துவ பதிவு சுருக்கம்",
-        dateTime: "தேதி/நேரம்",
-        referencePage: "குறிப்பு/பக்கம் எண்",
-        provider: "வழங்குநர்",
-        encounterSummary: "என்கவுண்டர் சுருக்கம்",
-        loading: "ஏற்றுகிறது..."
+        loading: "लोड करत आहे...",
+        // Medical history entries
+        entry1Date: "१४/०२/२०२१ सकाळी १०:००",
+        entry1Ref: 'पृष्ठ १-३, "प्रारंभिक सल्ला पत्र"',
+        entry1Provider: "डॉ. आदित्य शाह, किरणोत्सर्ग ऑन्कोलॉजिस्ट",
+        entry1Summary: "रुग्णाने LHS ग्लिओब्लास्टोमा साठी किरणोत्सर्ग उपचाराबद्दल प्रारंभिक सल्ल्यासाठी डॉ. शाह यांना भेट दिली",
+        entry2Date: "१७/०२/२०२१ सकाळी ८:१५",
+        entry2Ref: 'पृष्ठ ४, "सीटी सामना"',
+        entry2Provider: "सीटी टीम, किरणोत्सर्ग ऑन्कोलॉजी विभाग",
+        entry2Summary: "रुग्ण सीटी विभागात रिपोर्ट केला परंतु त्यांना सांगितले गेले की COVID-19 स्टाफिंग समस्यांमुळे त्यांना स्कॅन केले जाऊ शकत नाही"
     }
+    
 };
 
 // Function to set language
@@ -317,6 +285,47 @@ function translatePage() {
     var backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.textContent = trans.back;
+    }
+
+    // Translate medical history entries
+    var entry1Date = document.getElementById('entry1-date');
+    if (entry1Date) {
+        entry1Date.textContent = trans.entry1Date;
+    }
+
+    var entry1Ref = document.getElementById('entry1-ref');
+    if (entry1Ref) {
+        entry1Ref.textContent = trans.entry1Ref;
+    }
+
+    var entry1Provider = document.getElementById('entry1-provider');
+    if (entry1Provider) {
+        entry1Provider.textContent = trans.entry1Provider;
+    }
+
+    var entry1Summary = document.getElementById('entry1-summary');
+    if (entry1Summary) {
+        entry1Summary.textContent = trans.entry1Summary;
+    }
+
+    var entry2Date = document.getElementById('entry2-date');
+    if (entry2Date) {
+        entry2Date.textContent = trans.entry2Date;
+    }
+
+    var entry2Ref = document.getElementById('entry2-ref');
+    if (entry2Ref) {
+        entry2Ref.textContent = trans.entry2Ref;
+    }
+
+    var entry2Provider = document.getElementById('entry2-provider');
+    if (entry2Provider) {
+        entry2Provider.textContent = trans.entry2Provider;
+    }
+
+    var entry2Summary = document.getElementById('entry2-summary');
+    if (entry2Summary) {
+        entry2Summary.textContent = trans.entry2Summary;
     }
 }
 
