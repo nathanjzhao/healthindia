@@ -38,11 +38,20 @@
             <div class="form-section">
                 <h2 id="call-heading">Call Telemedicine Hub</h2>
                 <form method="post" onsubmit="return validatePhoneNumber()">
-                    <label for="to_number" id="phone-label">Phone Number:</label>
-                    <input type="text" name="to_number" id="to_number" placeholder="">
-
-                    <input type="submit" value="" id="call-button">
+                    Phone Number: <input type="text" name="to_number" id="to_number">
+                    <input type="submit" value="Call">
                 </form>
+                <script>
+                    function validatePhoneNumber() {
+                        var phoneNumber = document.getElementById('to_number').value;
+                        var regex = /^+?\d{10,15}$/;
+                        if (!regex.test(phoneNumber)) {
+                            alert("Invalid phone number format. Please use E.164 format.");
+                            return false;
+                        }
+                        return true;
+                    }
+                </script>
             </div>
         </div>
     </div>

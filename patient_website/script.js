@@ -414,14 +414,3 @@ window.addEventListener('pageshow', function(event) {
         loadingScreen.style.display = 'none';
     }
 });
-
-// Phone number validation function
-function validatePhoneNumber() {
-    var phoneNumber = document.getElementById('to_number').value;
-    var regex = /^\+?\d{10,15}$/;  // Corrected regex for E.164 format
-    if (!regex.test(phoneNumber)) {
-        alert("Invalid phone number format. Please use E.164 format.");
-        return false;
-    }
-    return true;
-}
