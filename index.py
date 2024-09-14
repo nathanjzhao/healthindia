@@ -10,6 +10,8 @@ from flask_cors import CORS
 from tts import text_to_speech
 import json
 from langdetect import detect
+from googletrans import Translator
+from datetime import datetime
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -25,6 +27,7 @@ load_dotenv()
 account_sid = os.getenv('TWILIO_ACCOUNT_SID')
 auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 openai_api_key = os.getenv('OPENAI_API_KEY')
+twilio_phone_number=os.getenv('TWILIO_PHONE_NUMBER')
 ngrok_url = os.getenv('NGROK_URL')
 
 print(f'ngrok_url: {ngrok_url}')
@@ -92,7 +95,7 @@ def voice():
             call = client.calls.create(
                 twiml=str(twiml),
                 to=to_number,
-                from_=os.getenv('TWILIO_PHONE_NUMBER')
+                from_=twilio_phone_number
             )
 
             logger.info(f"Initiating call to {to_number}. Call SID: {call.sid}")
@@ -198,9 +201,37 @@ def stream(call_sid):
 
     return Response(stream_with_context(event_stream()), content_type='text/event-stream')
 
-@app.route("/medical-record", methods=['GET', 'POST'])
+# Path to the JSON file
+JSON_FILE = 'medical_record.json'
+
+# Utility to read the JSON file
+def read_medical_record():
+    if os.path.exists(JSON_FILE):
+        with open(JSON_FILE, 'r') as file:
+            return json.load(file)
+    return {}
+
+# Utility to write to the JSON file
+def write_medical_record(data):
+    with open(JSON_FILE, 'w') as file:
+        json.dump(data, file, indent=4)
+
+def add_entry_to_medical_record(new_entries):
+    # Read the existing record
+    record = read_medical_record()
+    # Get the current time
+    current_time = datetime.now().strftime("%m/%d/%Y %I:%M%p")
+    # Add the new entry using the current time as the key
+    record['entries'].append({current_time: new_entries})
+    # Write the updated record back to the JSON file
+    write_medical_record(record)
+
+@app.route('/medical-record', methods=['GET'])
 def medical_record():
-    return render_template('medical-record.html')
+    # Read the medical record data from the JSON file
+    record = read_medical_record()
+    # Render the medical-record.html template and pass the record data
+    return render_template('medical-record.html', record=record)
 
 if __name__ == "__main__":
     app.run(debug=True)

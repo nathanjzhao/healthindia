@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Record Summary</title>
-    <!-- Updated to use Flask's url_for for static files -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
@@ -13,60 +13,60 @@
     <div class="container">
         <h1 id="medical-record-title">Medical Record Summary</h1>
 
+        <!-- Patient Information -->
         <div class="patient-info">
             <h2 id="patient-info-heading">Patient Information</h2>
             <table>
                 <tr>
                     <td><strong id="first-name-label">First Name</strong></td>
-                    <td id="first-name">Gopalaswami</td>
+                    <td id="first-name">{{ record.fname }}</td>
                     <td><strong id="last-name-label">Last Name</strong></td>
-                    <td id="last-name">Ramanathan Ramachandra</td>
+                    <td id="last-name">{{ record.lname }}</td>
                 </tr>
                 <tr>
                     <td><strong id="dob-label">Date of Birth</strong></td>
-                    <td id="dob">03/14/1921</td>
+                    <td id="dob">{{ record.dob }}</td>
                     <td><strong id="gender-label">Gender</strong></td>
-                    <td id="gender">Male</td>
+                    <td id="gender">{{ record.gender }}</td>
                 </tr>
                 <tr>
                     <td><strong id="height-label">Height (cm)</strong></td>
-                    <td id="height">172 cm</td>
+                    <td id="height">{{ record.height }}</td>
                     <td><strong id="weight-label">Weight (kg)</strong></td>
-                    <td id="weight">88 kg</td>
+                    <td id="weight">{{ record.weight }}</td>
                 </tr>
             </table>
         </div>
 
+        <!-- Chronological Medical Records Summary -->
         <div class="record-summary">
             <h2 id="record-summary-heading">Chronological Medical Records Summary</h2>
-            <table class="record-table">
+            <table id="record-table" class="record-table">
                 <thead>
                     <tr>
                         <th id="date-time-header">Date/Time</th>
-                        <th id="reference-header">Reference/Page No.</th>
-                        <th id="provider-header">Provider</th>
                         <th id="encounter-summary-header">Encounter Summary</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="record-entries">
+                    <!-- Loop through the medical record entries -->
+                    {% for entry in record.entries %}
+                        {% for date, summary in entry.items() %}
+                        <tr>
+                            <td>{{ date }}</td>
+                            <td>{{ summary | join('. ') }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
                     <tr>
-                        <td id="entry1-date">02/14/2021 10:00am</td>
-                        <td id="entry1-ref">Pg 1-3, "Initial Consult Letter"</td>
-                        <td id="entry1-provider">Dr. Aditya Shah, Radiation Oncologist</td>
-                        <td id="entry1-summary">Patient saw Dr. Shah for initial consultation regarding radiation therapy for LHS glioblastoma</td>
+                        <td colspan="2">No medical entries found.</td>
                     </tr>
-                    <tr>
-                        <td id="entry2-date">02/17/2021 8:15am</td>
-                        <td id="entry2-ref">Pg 4, "CT Encounter"</td>
-                        <td id="entry2-provider">CT Team, Radiation Oncology Department</td>
-                        <td id="entry2-summary">Patient reported to CT department but was told she could not be scanned due to COVID-19 staffing issues</td>
-                    </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Loading Screen -->
     <div id="loading-screen" class="loading-screen">
         <div class="spinner"></div>
         <p id="loading-text">Loading...</p>

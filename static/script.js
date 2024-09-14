@@ -27,19 +27,8 @@ var translations = {
         weight: "Weight (kg)",
         chronologicalSummary: "Chronological Medical Records Summary",
         dateTime: "Date/Time",
-        referencePage: "Reference/Page No.",
-        provider: "Provider",
         encounterSummary: "Encounter Summary",
-        loading: "Loading...",
-        // Medical history entries
-        entry1Date: "02/14/2021 10:00am",
-        entry1Ref: 'Pg 1-3, "Initial Consult Letter"',
-        entry1Provider: "Dr. Aditya Shah, Radiation Oncologist",
-        entry1Summary: "Patient saw Dr. Shah for initial consultation regarding radiation therapy for LHS glioblastoma",
-        entry2Date: "02/17/2021 8:15am",
-        entry2Ref: 'Pg 4, "CT Encounter"',
-        entry2Provider: "CT Team, Radiation Oncology Department",
-        entry2Summary: "Patient reported to CT department but was told she could not be scanned due to COVID-19 staffing issues"
+        loading: "Loading..."
     },
     hi: {
         // index
@@ -66,19 +55,8 @@ var translations = {
         weight: "वजन (किग्रा)",
         chronologicalSummary: "कालानुक्रमिक मेडिकल रिकॉर्ड सारांश",
         dateTime: "दिनांक/समय",
-        referencePage: "संदर्भ/पृष्ठ संख्या",
-        provider: "प्रदाता",
         encounterSummary: "मुठभेड़ सारांश",
-        loading: "लोड हो रहा है...",
-        // Medical history entries
-        entry1Date: "14/02/2021 सुबह 10:00 बजे",
-        entry1Ref: 'पृष्ठ 1-3, "प्रारंभिक परामर्श पत्र"',
-        entry1Provider: "डॉ. आदित्य शाह, रेडिएशन ऑन्कोलॉजिस्ट",
-        entry1Summary: "रोगी ने LHS ग्लियोब्लास्टोमा के लिए रेडिएशन थेरेपी के संबंध में प्रारंभिक परामर्श के लिए डॉ. शाह से मुलाकात की",
-        entry2Date: "17/02/2021 सुबह 8:15 बजे",
-        entry2Ref: 'पृष्ठ 4, "सीटी मुठभेड़"',
-        entry2Provider: "सीटी टीम, रेडिएशन ऑन्कोलॉजी विभाग",
-        entry2Summary: "रोगी सीटी विभाग में रिपोर्ट किया लेकिन उन्हें बताया गया कि COVID-19 स्टाफिंग मुद्दों के कारण उन्हें स्कैन नहीं किया जा सकता"
+        loading: "लोड हो रहा है..."
     },
     mr: {
         // index
@@ -105,19 +83,8 @@ var translations = {
         weight: "वजन (कि.ग्रॅ.)",
         chronologicalSummary: "कालानुक्रमिक वैद्यकीय नोंदींचा सारांश",
         dateTime: "दिनांक/वेळ",
-        referencePage: "संदर्भ/पृष्ठ क्रमांक",
-        provider: "प्रदाता",
         encounterSummary: "सामना सारांश",
-        loading: "लोड करत आहे...",
-        // Medical history entries
-        entry1Date: "१४/०२/२०२१ सकाळी १०:००",
-        entry1Ref: 'पृष्ठ १-३, "प्रारंभिक सल्ला पत्र"',
-        entry1Provider: "डॉ. आदित्य शाह, किरणोत्सर्ग ऑन्कोलॉजिस्ट",
-        entry1Summary: "रुग्णाने LHS ग्लिओब्लास्टोमा साठी किरणोत्सर्ग उपचाराबद्दल प्रारंभिक सल्ल्यासाठी डॉ. शाह यांना भेट दिली",
-        entry2Date: "१७/०२/२०२१ सकाळी ८:१५",
-        entry2Ref: 'पृष्ठ ४, "सीटी सामना"',
-        entry2Provider: "सीटी टीम, किरणोत्सर्ग ऑन्कोलॉजी विभाग",
-        entry2Summary: "रुग्ण सीटी विभागात रिपोर्ट केला परंतु त्यांना सांगितले गेले की COVID-19 स्टाफिंग समस्यांमुळे त्यांना स्कॅन केले जाऊ शकत नाही"
+        loading: "लोड करत आहे..."
     }
     
 };
@@ -262,16 +229,6 @@ function translatePage() {
         dateTimeHeader.textContent = trans.dateTime;
     }
 
-    var referenceHeader = document.getElementById('reference-header');
-    if (referenceHeader) {
-        referenceHeader.textContent = trans.referencePage;
-    }
-
-    var providerHeader = document.getElementById('provider-header');
-    if (providerHeader) {
-        providerHeader.textContent = trans.provider;
-    }
-
     var encounterSummaryHeader = document.getElementById('encounter-summary-header');
     if (encounterSummaryHeader) {
         encounterSummaryHeader.textContent = trans.encounterSummary;
@@ -285,47 +242,6 @@ function translatePage() {
     var backButton = document.getElementById('back-button');
     if (backButton) {
         backButton.textContent = trans.back;
-    }
-
-    // Translate medical history entries
-    var entry1Date = document.getElementById('entry1-date');
-    if (entry1Date) {
-        entry1Date.textContent = trans.entry1Date;
-    }
-
-    var entry1Ref = document.getElementById('entry1-ref');
-    if (entry1Ref) {
-        entry1Ref.textContent = trans.entry1Ref;
-    }
-
-    var entry1Provider = document.getElementById('entry1-provider');
-    if (entry1Provider) {
-        entry1Provider.textContent = trans.entry1Provider;
-    }
-
-    var entry1Summary = document.getElementById('entry1-summary');
-    if (entry1Summary) {
-        entry1Summary.textContent = trans.entry1Summary;
-    }
-
-    var entry2Date = document.getElementById('entry2-date');
-    if (entry2Date) {
-        entry2Date.textContent = trans.entry2Date;
-    }
-
-    var entry2Ref = document.getElementById('entry2-ref');
-    if (entry2Ref) {
-        entry2Ref.textContent = trans.entry2Ref;
-    }
-
-    var entry2Provider = document.getElementById('entry2-provider');
-    if (entry2Provider) {
-        entry2Provider.textContent = trans.entry2Provider;
-    }
-
-    var entry2Summary = document.getElementById('entry2-summary');
-    if (entry2Summary) {
-        entry2Summary.textContent = trans.entry2Summary;
     }
 }
 
@@ -362,6 +278,7 @@ var users = {
     "nurse": "nursepassword"
 };
 
+
 // Handle login form submission
 var loginForm = document.getElementById('login-form');
 if (loginForm) {
@@ -380,7 +297,7 @@ if (loginForm) {
             setTimeout(function() {
                 // After login process, redirect to medical records
                 window.location.href = "medical-record";
-            }, 3000);  // Simulate a 3-second login delay
+            }, 1000);
         } else {
             alert("Invalid username or password. Please try again.");
         }
@@ -414,3 +331,46 @@ window.addEventListener('pageshow', function(event) {
         loadingScreen.style.display = 'none';
     }
 });
+
+function populateMedicalRecord(data) {
+    // Fill patient info
+    document.getElementById('first-name').textContent = data.fname || '';
+    document.getElementById('last-name').textContent = data.lname || '';
+    document.getElementById('dob').textContent = data.dob || '';
+    document.getElementById('gender').textContent = data.gender || '';
+    document.getElementById('height').textContent = data.height || '';
+    document.getElementById('weight').textContent = data.weight || '';
+
+    // Check if there are entries in the medical records
+    const recordEntries = document.getElementById('record-entries');
+    recordEntries.innerHTML = ''; // Clear previous entries
+
+    if (data.entries && data.entries.length > 0) {
+        // Loop over the entries (date -> entry pair)
+        data.entries.forEach(entryObj => {
+            for (const [date, entries] of Object.entries(entryObj)) {
+                const row = document.createElement('tr');
+
+                // Create date cell
+                const dateCell = document.createElement('td');
+                dateCell.textContent = date;
+                row.appendChild(dateCell);
+
+                // Create summary cell
+                const summaryCell = document.createElement('td');
+                summaryCell.textContent = entries.join('. '); // Join entry items into a sentence
+                row.appendChild(summaryCell);
+
+                recordEntries.appendChild(row);
+            }
+        });
+
+        // Make sure the table and heading are displayed
+        document.getElementById('record-summary-heading').style.display = 'block';
+        document.getElementById('record-table').style.display = 'table';
+    } else {
+        // If no entries, hide the table and heading
+        document.getElementById('record-summary-heading').style.display = 'none';
+        document.getElementById('record-table').style.display = 'none';
+    }
+}
