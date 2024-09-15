@@ -24,7 +24,7 @@ var translations = {
         patientInformation: "Patient Information",
         firstName: "First Name",
         lastName: "Last Name",
-        dateOfBirth: "Date of Birth",
+        age: "age",
         gender: "Gender",
         height: "Height (cm)",
         weight: "Weight (kg)",
@@ -56,7 +56,7 @@ var translations = {
         patientInformation: "रोगी की जानकारी",
         firstName: "पहला नाम",
         lastName: "अंतिम नाम",
-        dateOfBirth: "जन्म तिथि",
+        age: "उम्र",
         gender: "लिंग",
         height: "ऊंचाई (सेमी)",
         weight: "वजन (किलो)",
@@ -88,7 +88,7 @@ var translations = {
         patientInformation: "రోగి సమాచారం",
         firstName: "మొదటి పేరు",
         lastName: "చివరి పేరు",
-        dateOfBirth: "పుట్టిన తేది",
+        age: "வயது",
         gender: "లింగం",
         height: "ఎత్తు (సెం.మీ)",
         weight: "బరువు (కిలోలలో)",
@@ -245,9 +245,9 @@ function translatePage() {
         lastNameLabel.textContent = trans.lastName;
     }
 
-    var dobLabel = document.getElementById('dob-label');
-    if (dobLabel) {
-        dobLabel.textContent = trans.dateOfBirth;
+    var ageLabel = document.getElementById('age-label');
+    if (ageLabel) {
+        ageLabel.textContent = trans.age;
     }
 
     var genderLabel = document.getElementById('gender-label');
@@ -388,7 +388,7 @@ function populateMedicalRecord(data) {
     // Fill patient info
     document.getElementById('first-name').textContent = data.fname || '';
     document.getElementById('last-name').textContent = data.lname || '';
-    document.getElementById('dob').textContent = data.dob || '';
+    document.getElementById('age').textContent = data.age || '';
     document.getElementById('gender').textContent = data.gender || '';
     document.getElementById('height').textContent = data.height || '';
     document.getElementById('weight').textContent = data.weight || '';

@@ -10,7 +10,7 @@ import time
 from flask_cors import CORS  
 from tts import text_to_speech
 import json
-from user_history import finalize_call, load_user_history, save_user_history
+from user_history import finalize_call, load_user_history, save_user_history, update_user_info, finalize_call, add_entry_to_history
 from conversation_logic import interpret_response, update_user_history, rephrase_question
 from tree import decisionTree
 
@@ -360,12 +360,44 @@ def add_entry_to_medical_record(new_entries):
     # Write the updated record back to the JSON file
     write_medical_record(record)
 
-@app.route('/medical-record', methods=['GET'])
-def medical_record():
-    # Read the medical record data from the JSON file
-    record = read_medical_record()
-    # Render the medical-record.html template and pass the record data
-    return render_template('medical-record.html', record=record)
+@app.route('/submit-form', methods=['POST'])
+def submit_form():
+    # Get form data
+    phone_number = request.form['phone_number']
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    age = request.form['age']
+    gender = request.form['gender']
+    height = request.form['height']
+    weight = request.form['weight']
+    reason = request.form['reason']
+
+    # Load or create user history
+    user_history = load_user_history(phone_number)
+
+    # Update user information
+    update_user_info(user_history, 'fname', first_name)
+    update_user_info(user_history, 'lname', last_name)
+    update_user_info(user_history, 'age',  age)  # Convert DOB to age
+    update_user_info(user_history, 'gender', gender)
+    update_user_info(user_history, 'height', height)
+    update_user_info(user_history, 'weight', weight)
+
+    # Add the reason for visit to the current call information
+    add_entry_to_history(user_history, [f"Reason for visit: {reason}"])
+
+    # Save the updated user history
+    finalize_call(user_history)
+    save_user_history(phone_number, user_history)
+
+    # Redirect to the medical record page to display the updated data
+    return redirect(url_for('medical_record', phone_number=phone_number))
+
+@app.route('/medical-record/<phone_number>')
+def medical_record(phone_number):
+    # Load the user history to display
+    user_history = load_user_history(phone_number)
+    return render_template('medical-record.html', record=user_history)
 
 @app.route('/set_language', methods=['POST'])
 def set_language():

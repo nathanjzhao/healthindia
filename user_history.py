@@ -1,6 +1,9 @@
 import json
 from datetime import datetime
 import os
+from flask import Flask, request, redirect, render_template, url_for
+
+app = Flask(__name__)
 
 FOLDER_PATH = "static/user_data"
 

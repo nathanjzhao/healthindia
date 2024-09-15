@@ -10,7 +10,7 @@
     ],
     "fname": "John",
     "lname": "Doe",
-    "dob": "30",
+    "age": "30",
     "gender": "Male",
     "height": "180",
     "weight": "150"
