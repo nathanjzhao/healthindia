@@ -335,7 +335,8 @@ def stream(call_sid):
     return Response(stream_with_context(event_stream()), content_type='text/event-stream')
 
 # Path to the JSON file
-JSON_FILE = 'medical_record.json'
+JSON_CURR = 'user_history_+12223334444.json'
+JSON_FILE = os.path.join(app.root_path, 'static', 'user_data', JSON_CURR)
 
 # Utility to read the JSON file
 def read_medical_record():
