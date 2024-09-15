@@ -15,8 +15,8 @@ S3_OBJECT_NAME = 'doctor1.mp3'  # Name of the file when uploaded to S3
 S3_REGION = 'us-east-2'  # Ensure this matches your bucket's region
 
 language_voice_map = {
-    'en': 'bIHbv24MWmeRgasZH58o',
-    'hi': '50YSQEDPA2vlOxhCseP4',
+    'en': 'mCQMfsqGDT6IDkEKR20a',
+    'hi': 'IvLWq57RKibBrqZGpQrC',
     'ta': 'gCr8TeSJgJaeaIoV4RWH'
 }
 

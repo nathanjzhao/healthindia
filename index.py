@@ -63,16 +63,16 @@ language_mappings = {
         'error_occurred': "क्षमा करें, एक त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
         'gather_language': 'hi-IN'
     },
-    'mr': {
-        'welcome': "नमस्कार, AI-सहाय्यक वैद्यकीय निदानात आपले स्वागत आहे.",
-        'welcome_back': "नमस्कार {}, AI-सहाय्यक वैद्यकीय निदानात आपले पुन्हा स्वागत आहे.",
-        'didnt_catch': "क्षमा करा, मला ते समजले नाही. कृपया पुन्हा सांगा?",
-        'couldnt_understand': "मला तुमचे उत्तर समजले नाही.",
-        'consult_professional': "तुमच्या उत्तरांच्या आधारे, तुम्हाला {} असू शकते. कृपया योग्य निदानासाठी वैद्यकीय व्यावसायिकांचा सल्ला घ्या.",
-        'thank_you': "तुमच्या वेळेबद्दल धन्यवाद. निरोप!",
-        'error_processing': "क्षमा करा, मला तुमचे उत्तर प्रक्रिया करण्यात अडचण येत आहे. पुन्हा प्रयत्न करू या.",
-        'error_occurred': "क्षमा करा, एक त्रुटी आली. कृपया नंतर पुन्हा प्रयत्न करा.",
-        'gather_language': 'mr-IN'
+    'ta': {
+        'welcome': "வணக்கம், AI உதவியாளர் மருத்துவக் கண்டறிதலில் உங்களை வரவேற்கிறது.",
+        'welcome_back': "வணக்கம் {}, AI உதவியாளர் மருத்துவக் கண்டறிதலில் உங்களை மீண்டும் வரவேற்கிறது.",
+        'didnt_catch': "மன்னிக்கவும், எனக்குப் புரியவில்லை. தயவுசெய்து மறுபடியும் சொல்க!",
+        'couldnt_understand': "உங்கள் பதில் எனக்குப் புரியவில்லை.",
+        'consult_professional': "உங்கள் பதில்களின் அடிப்படையில், உங்களுக்கு {} இருக்கலாம். சரியான கண்டறிதலுக்காக ஒரு மருத்துவ நிபுணரின் ஆலோசனைப் பெறவும்.",
+        'thank_you': "உங்கள் நேரத்திற்காக நன்றி. விடை!",
+        'error_processing': "மன்னிக்கவும், உங்கள் பதிலைப் புரிந்துகொள்வதில் சிரமமாகிறது. மீண்டும் முயற்சிப்போம்.",
+        'error_occurred': "மன்னிக்கவும், ஒரு பிழை ஏற்பட்டது. பின்னர் மீண்டும் முயற்சிக்கவும்.",
+        'gather_language': 'ta-IN'
     }
 }
 
@@ -125,7 +125,7 @@ def login():
                 else:
                     twiml.say("I'm sorry, I couldn't generate the audio. Let's try again.")
 
-                gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
+                gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1, timeout=15)
                 twiml.append(gather)
 
                 call = client.calls.create(
@@ -294,7 +294,7 @@ def handle_input():
 
         # Always add a new Gather unless we're hanging up
         if 'hangup' not in twiml.verbs:
-            gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
+            gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1, timeout=15)
             twiml.append(gather)
 
         logger.info(f"Returning TwiML: {twiml}")

@@ -58,35 +58,34 @@ var translations = {
         encounterSummary: "मुठभेड़ सारंश",
         loading: "लोड हो रहा है..."
     },
-    mr: {
-    // index
-    selectLanguage: "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்",
-    // login
-    accessMedicalRecords: "மருத்துவ பதிவுகளை அணுகவும்",
-    login: "உள்நுழை",
-    username: "தொலைபேசி எண்:",
-    password: "கடவுச்சொல்:",
-    loginButton: "உள்நுழை",
-    callTelemedicineHub: "தொலை மருத்துவ மையத்திற்கு அழைக்கவும்",
-    phoneNumber: "தொலைபேசி எண்:",
-    callButton: "அழைக்கவும்",
-    loggingIn: "உள்நுழைகிறது...",
-    back: "பின்செல்",
-    // medical-record
-    medicalRecordSummary: "மருத்துவ பதிவு சுருக்கம்",
-    patientInformation: "நோயாளர் தகவல்",
-    firstName: "முதல் பெயர்",
-    lastName: "கடைசி பெயர்",
-    dateOfBirth: "பிறந்த தேதி",
-    gender: "பாலினம்",
-    height: "உயரம் (cm)",
-    weight: "எடை (kg)",
-    chronologicalSummary: "காலவரிசைப்படி மருத்துவ பதிவு சுருக்கம்",
-    dateTime: "தேதி/நேரம்",
-    encounterSummary: "சந்திப்பு சுருக்கம்",
-    loading: "ஏற்றப்படுகிறது..."
-    }
-    
+    'ta': {
+        // index
+        selectLanguage: "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்",
+        // login
+        accessMedicalRecords: "மருத்துவ பதிவுகளை அணுகவும்",
+        login: "உள்நுழை",
+        username: "தொலைபேசி எண்:",
+        password: "கடவுச்சொல்:",
+        loginButton: "உள்நுழை",
+        callTelemedicineHub: "தொலை மருத்துவ மையத்திற்கு அழைக்கவும்",
+        phoneNumber: "தொலைபேசி எண்:",
+        callButton: "அழைக்கவும்",
+        loggingIn: "உள்நுழைகிறது...",
+        back: "பின்செல்",
+        // medical-record
+        medicalRecordSummary: "மருத்துவ பதிவு சுருக்கம்",
+        patientInformation: "நோயாளர் தகவல்",
+        firstName: "முதல் பெயர்",
+        lastName: "கடைசி பெயர்",
+        dateOfBirth: "பிறந்த தேதி",
+        gender: "பாலினம்",
+        height: "உயரம் (cm)",
+        weight: "எடை (kg)",
+        chronologicalSummary: "காலவரிசைப்படி மருத்துவ பதிவு சுருக்கம்",
+        dateTime: "தேதி/நேரம்",
+        encounterSummary: "சந்திப்பு சுருக்கம்",
+        loading: "ஏற்றப்படுகிறது..."
+    }    
 };
 
 // Function to set language
@@ -292,7 +291,7 @@ function formatPhoneNumber(phoneNumber) {
     if (phoneNumber.startsWith('+1')) {
         return `${cleaned}`;
     }
-    
+
     return `+1${cleaned}`;
 }
 

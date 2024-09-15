@@ -29,7 +29,9 @@
   "gender": "Other",
   "height": "170",
   "weight": "70",
-  "current_call": [],
+  "current_call": [
+    "- The user responded with \"\u0b95\u0bae\u0bcd\" which is a typo or error in Tamil, likely intending to say \"\u0b87\u0bb0\u0bc1\u0bae\u0bb2\u0bcd\" which means \"cough.\""
+  ],
   "username": "+13025132743",
   "password": "password",
   "phone_number": "+13025132743"
