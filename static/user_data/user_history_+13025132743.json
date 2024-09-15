@@ -22,6 +22,17 @@
     "- User denies recent exposure to respiratory irritants or allergens.",
     "- The user is requesting an explanation of what is meant by \"halogen.\"",
     "- User's response does not directly address the symptoms asked about.",
-    "- The response suggests negativity or unlikely recurrence but is ambiguous without further context."
+    "- The response suggests negativity or unlikely recurrence but is ambiguous without further context.",
+    "- User confirmed experiencing symptoms: fever, cough, shortness of breath, or fatigue.",
+    "- User is experiencing coughing",
+    "- Requests a call if the receiver is Romany",
+    "- No direct answer regarding a persistent cough",
+    "- Possible acknowledgment of awareness",
+    "- Mention of others (\"they\") being tried or tested",
+    "- User confirms experiencing fever (\"\u092e\u0941\u091d\u0947 \u092c\u0941\u0916\u093e\u0930 \u0939\u0948\" translates to \"I have a fever\").",
+    "- User's response: \"Navy.\"",
+    "- Contextual relevance: None provided; response is unrelated to the question about having a fever.",
+    "- User expressed indifference to the condition of having a fever.",
+    "- No direct answer provided to the question about fever temperature."
   ]
 }

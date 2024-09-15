@@ -374,3 +374,17 @@ function populateMedicalRecord(data) {
         document.getElementById('record-table').style.display = 'none';
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.language-button');
+    const form = document.getElementById('languageForm');
+    const languageInput = document.getElementById('selectedLanguage');
+
+    buttons.forEach(button => {
+        button.addEventListener('click', function() {
+            const lang = this.getAttribute('data-lang');
+            languageInput.value = lang;
+            form.submit();
+        });
+    });
+});

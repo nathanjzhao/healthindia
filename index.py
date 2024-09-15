@@ -1,5 +1,6 @@
+from datetime import datetime
 import logging
-from flask import Flask, request, render_template, jsonify, Response, stream_with_context
+from flask import Flask, redirect, request, render_template, jsonify, Response, stream_with_context, session, url_for
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.rest import Client
 from dotenv import load_dotenv
@@ -18,6 +19,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+app.secret_key = os.getenv('FLASK_SECRET_KEY')
 CORS(app) 
 
 # Load environment variables
@@ -37,6 +39,42 @@ client = Client(account_sid, auth_token)
 predictionState = "root"
 conversation_history = {}
 
+language_mappings = {
+    'en': {
+        'welcome': "Hello, welcome to the AI-assisted medical diagnosis.",
+        'welcome_back': "Hello {}, welcome back to the AI-assisted medical diagnosis.",
+        'didnt_catch': "I'm sorry, I didn't catch that. Could you please repeat?",
+        'couldnt_understand': "I couldn't understand your response.",
+        'consult_professional': "Based on your answers, you may have {}. Please consult a medical professional for proper diagnosis.",
+        'thank_you': "Thank you for your time. Goodbye!",
+        'error_processing': "I'm sorry, I'm having trouble processing your response. Let's try again.",
+        'error_occurred': "I'm sorry, an error occurred. Please try again later.",
+        'gather_language': 'en-US'
+    },
+    'hi': {
+        'welcome': "नमस्ते, AI-सहायता प्राप्त चिकित्सा निदान में आपका स्वागत है।",
+        'welcome_back': "नमस्ते {}, AI-सहायता प्राप्त चिकित्सा निदान में आपका फिर से स्वागत है।",
+        'didnt_catch': "क्षमा करें, मुझे वह समझ नहीं आया। कृपया दोहराएं?",
+        'couldnt_understand': "मैं आपके जवाब को समझ नहीं पाया।",
+        'consult_professional': "आपके जवाबों के आधार पर, आपको {} हो सकता है। कृपया उचित निदान के लिए चिकित्सा पेशेवर से परामर्श करें।",
+        'thank_you': "आपके समय के लिए धन्यवाद। अलविदा!",
+        'error_processing': "क्षमा करें, मुझे आपके जवाब को संसाधित करने में समस्या हो रही है। फिर से प्रयास करें।",
+        'error_occurred': "क्षमा करें, एक त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
+        'gather_language': 'hi-IN'
+    },
+    'mr': {
+        'welcome': "नमस्कार, AI-सहाय्यक वैद्यकीय निदानात आपले स्वागत आहे.",
+        'welcome_back': "नमस्कार {}, AI-सहाय्यक वैद्यकीय निदानात आपले पुन्हा स्वागत आहे.",
+        'didnt_catch': "क्षमा करा, मला ते समजले नाही. कृपया पुन्हा सांगा?",
+        'couldnt_understand': "मला तुमचे उत्तर समजले नाही.",
+        'consult_professional': "तुमच्या उत्तरांच्या आधारे, तुम्हाला {} असू शकते. कृपया योग्य निदानासाठी वैद्यकीय व्यावसायिकांचा सल्ला घ्या.",
+        'thank_you': "तुमच्या वेळेबद्दल धन्यवाद. निरोप!",
+        'error_processing': "क्षमा करा, मला तुमचे उत्तर प्रक्रिया करण्यात अडचण येत आहे. पुन्हा प्रयत्न करू या.",
+        'error_occurred': "क्षमा करा, एक त्रुटी आली. कृपया नंतर पुन्हा प्रयत्न करा.",
+        'gather_language': 'mr-IN'
+    }
+}
+
 @app.route("/get_conversation", methods=['GET'])
 def get_conversation():
     global conversation_history 
@@ -50,7 +88,8 @@ def index():
     return render_template('index.html')
 
 @app.route("/login", methods=['GET', 'POST'])
-def voice():
+def login():
+    language = session.get('language', 'en')
     global predictionState, conversation_history
     if request.method == 'POST':
         to_number = request.form['to_number']
@@ -70,9 +109,9 @@ def voice():
             root_question = decisionTree["root"]["question"]
 
             if user_history["fname"]:
-                speech_text = f"Hello {user_history['fname']}, welcome back to the AI-assisted medical diagnosis. {root_question}"
+                speech_text = language_mappings[language]['welcome_back'].format(user_history['fname']) + " " + root_question
             else:
-                speech_text = f"Hello, welcome to the AI-assisted medical diagnosis. {root_question}"
+                speech_text = language_mappings[language]['welcome'] + " " + root_question
 
             # Generate speech file and get S3 URL
             s3_url = text_to_speech(speech_text)
@@ -82,7 +121,7 @@ def voice():
             else:
                 twiml.say("I'm sorry, I couldn't generate the audio. Let's try again.")
 
-            gather = Gather(input='speech', action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
+            gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
             twiml.append(gather)
 
             call = client.calls.create(
@@ -113,6 +152,7 @@ def voice():
 
 @app.route("/handle_input", methods=['POST'])
 def handle_input():
+    language = session.get('language', 'en')
     global predictionState, conversation_history
     try:
         logger.info("handle_input called")
@@ -125,7 +165,7 @@ def handle_input():
 
         if not user_input:
             logger.warning("No speech input received")
-            ai_response = "I'm sorry, I didn't catch that. Could you please repeat?"
+            ai_response = language_mappings[language]['didnt_catch']
         else:
             logger.info(f"User input: {user_input}")
             
@@ -149,10 +189,10 @@ def handle_input():
                     if interpreted_response in current_node:
                         predictionState = current_node[interpreted_response]
                     else:
-                        ai_response = f"I couldn't understand your response. {current_question}"
+                        ai_response = f"{language_mappings[language]['couldnt_understand']} {current_question}"
                     
                     if predictionState not in decisionTree:
-                        ai_response = f"Based on your answers, you may have {predictionState}. Please consult a medical professional for proper diagnosis."
+                        ai_response = language_mappings[language]['consult_professional'].format(predictionState)
                         finalize_call(user_history)
                     else:
                         next_question = decisionTree[predictionState]["question"]
@@ -162,7 +202,7 @@ def handle_input():
 
                 if ai_response.lower() == "stop call":
                     finalize_call(user_history)
-                    ai_response = "Thank you for your time. Goodbye!"
+                    ai_response = language_mappings[language]['thank_you']
                     twiml.say(ai_response)
                     twiml.hangup()
                 else:
@@ -176,7 +216,7 @@ def handle_input():
                 print("user_history: ", user_history)
             except Exception as e:
                 logger.error(f"Error processing input: {str(e)}")
-                ai_response = "I'm sorry, I'm having trouble processing your response. Let's try again."
+                ai_response = language_mappings[language]['error_processing']
                 twiml.say(ai_response)
 
                 finalize_call(user_history)
@@ -186,7 +226,7 @@ def handle_input():
 
         # Always add a new Gather unless we're hanging up
         if 'hangup' not in twiml.verbs:
-            gather = Gather(input='speech', action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
+            gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
             twiml.append(gather)
 
         logger.info(f"Returning TwiML: {twiml}")
@@ -206,7 +246,7 @@ def handle_input():
     except Exception as e:
         logger.error(f"Error in handle_input: {str(e)}", exc_info=True)
         twiml = VoiceResponse()
-        twiml.say("I'm sorry, an error occurred. Please try again later.")
+        twiml.say(language_mappings[language]['error_occurred'])
         return str(twiml), 500
 
 @app.route('/stream/<call_sid>')
@@ -256,6 +296,12 @@ def medical_record():
     record = read_medical_record()
     # Render the medical-record.html template and pass the record data
     return render_template('medical-record.html', record=record)
+
+@app.route('/set_language', methods=['POST'])
+def set_language():
+    language = request.form.get('language')
+    session['language'] = language
+    return redirect(url_for('login'))
 
 if __name__ == "__main__":
     app.run(debug=True)
