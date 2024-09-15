@@ -1,0 +1,17 @@
+{
+    "username": "+12223334444",
+    "password": "password",
+    "entries": [
+        {
+            "9/14/2024 3:26PM": ["Patient passed out following urination", "Patient experiences heart palpatations in the morning","Patient exhibited signs of paranoia"]}
+        ,{
+            "9/14/2024 3:30PM": ["Patient suffered from a stroke"]
+        }
+    ],
+    "fname": "John",
+    "lname": "Doe",
+    "dob": "30",
+    "gender": "Male",
+    "height": "180",
+    "weight": "150"
+}
