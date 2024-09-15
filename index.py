@@ -12,7 +12,7 @@ from flask_cors import CORS
 from tts import text_to_speech
 import json
 from user_history import finalize_call, load_user_history, save_user_history
-from conversation_logic import interpret_response, update_user_history, rephrase_question
+from conversation_logic import generate_openai_response, interpret_response, update_user_history, rephrase_question
 from tree import decisionTree
 
 # Set up logging
@@ -87,6 +87,10 @@ def get_conversation():
 @app.route("/", methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
+
+@app.route('/webform')
+def webform():
+    return render_template('webform.html')
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -418,6 +422,79 @@ def call_status():
 
     print("Call status:", call_status)
     return '', 204  # No content response
+
+
+@app.route('/submit_webform', methods=['POST'])
+def submit_webform():
+    # Get form data
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+    phone_number = request.form.get('phone_number')
+    dob = request.form.get('dob')
+    gender = request.form.get('gender')
+    height = request.form.get('height')
+    weight = request.form.get('weight')
+    reason = request.form.get('reason')
+
+    # Calculate age from DOB
+    birth_date = datetime.strptime(dob, '%Y-%m-%d')
+    today = datetime.now()
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+
+    # Process reason for visit with GPT
+    gpt_prompt = f"Given the following description of a patient's reason for visit, extract and convert it into a concise, organized bulleted list of symptoms and concerns. Do not use 'You' or 'Your' in the response. '{reason}'"
+    processed_reason = generate_openai_response(gpt_prompt)
+    
+    if processed_reason:
+        processed_reason = processed_reason.strip().split('\n')
+    else:
+        processed_reason = [f"- {reason}"]  # Fallback to original reason if GPT processing fails
+
+    # Construct the JSON file path
+    json_file = f'user_history_{phone_number}.json'
+    json_file_path = os.path.join(app.root_path, 'static', 'user_data', json_file)
+
+    # Read existing user history
+    user_history = read_medical_record(json_file_path)
+
+    # Update user information
+    user_history['fname'] = first_name
+    user_history['lname'] = last_name
+    user_history['age'] = str(age)
+    user_history['gender'] = gender
+    user_history['height'] = height
+    user_history['weight'] = weight
+    user_history['phone_number'] = phone_number
+
+    # Add new entry
+    current_time = datetime.now().strftime("%m/%d/%Y %I:%M%p")
+    new_entry = {
+        current_time: [
+            f"- Patient filled out webform."
+        ] + processed_reason
+    }
+    
+    if 'entries' not in user_history:
+        user_history['entries'] = []
+    user_history['entries'].append(new_entry)
+
+    # Write updated user history back to file
+    write_medical_record(user_history, json_file_path)
+
+    # Redirect to medical history page
+    return redirect(url_for('medical_record', phone_number=phone_number[1:]))  # Remove leading '+' for URL
+
+# Ensure these utility functions are defined:
+
+def read_medical_record(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
+            return json.load(file)
+    return {}
+
+def write_medical_record(data, file_path):
+    with open(file_path, 'w') as file:
+        json.dump(data, file, indent=4)
 
 if __name__ == "__main__":
     app.run(debug=True)

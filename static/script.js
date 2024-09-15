@@ -32,7 +32,7 @@ var translations = {
     },
     hi: {
         // index
-        selectLanguage: "अपनी भाषा चुनं",
+        selectLanguage: "अपनी भाषा चुन���",
         // login
         accessMedicalRecords: "मेडिकल रिकॉर्ड तक पहुंचें",
         login: "लॉगिन",
@@ -198,9 +198,9 @@ function translatePage() {
         lastNameLabel.textContent = trans.lastName;
     }
 
-    var dobLabel = document.getElementById('dob-label');
-    if (dobLabel) {
-        dobLabel.textContent = trans.dateOfBirth;
+    var ageLabel = document.getElementById('age-label');
+    if (ageLabel) {
+        ageLabel.textContent = trans.dateOfBirth;
     }
 
     var genderLabel = document.getElementById('gender-label');
@@ -288,11 +288,14 @@ function fetchMedicalRecord(phone_number) {
 // Function to format phone number
 function formatPhoneNumber(phoneNumber) {
     const cleaned = phoneNumber.replace(/\D/g, '');
-    if (phoneNumber.startsWith('+1')) {
-        return `${cleaned}`;
+    if (cleaned.startsWith('1') && cleaned.length === 10) {
+        return `+1${cleaned}`;
+    } else if (cleaned.startsWith('1') && cleaned.length === 11) {
+        return `+${cleaned}`;
+    } else if (cleaned.length === 10) {
+        return `+1${cleaned}`;
     }
-
-    return `+1${cleaned}`;
+    return phoneNumber;
 }
 
 // Handle login form submission
@@ -370,7 +373,7 @@ function populateMedicalRecord(data) {
     // Fill patient info
     document.getElementById('first-name').textContent = data.fname || '';
     document.getElementById('last-name').textContent = data.lname || '';
-    document.getElementById('dob').textContent = data.dob || '';
+    document.getElementById('age').textContent = data.age || '';
     document.getElementById('gender').textContent = data.gender || '';
     document.getElementById('height').textContent = data.height || '';
     document.getElementById('weight').textContent = data.weight || '';

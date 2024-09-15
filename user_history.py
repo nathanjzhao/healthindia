@@ -24,18 +24,18 @@ def load_user_history(phone_number):
     #     "weight": "N/A",   
     #     "current_call": []
     # }
-    print("phone_number: ", phone_number)
+    
     return {
         "entries": [],
-        "fname": "John",  
-        "lname": "Doe",  
-        "age": "30",      
+        "fname": "John",
+        "lname": "Doe",
+        "age": "30",
         "gender": "Other",
-        "height": "170",  
-        "weight": "70",   
+        "height": "170",
+        "weight": "70",
         "current_call": [],
-        "username": phone_number,  # Added phone_number as username
-        "password": "password",  # Added password field
+        "username": phone_number,
+        "password": "password",
         "phone_number": phone_number
     }
 
