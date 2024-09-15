@@ -1,6 +1,5 @@
 // script.js
 
-// Translation data
 var translations = {
     en: {
         // index
@@ -8,14 +7,18 @@ var translations = {
         // login
         accessMedicalRecords: "Access Medical Records",
         login: "Login",
-        username: "Phone Number:",
+        username: "Patient Phone Number:",
         password: "Password:",
         loginButton: "Log In",
         callTelemedicineHub: "Call Telemedicine Hub",
+        phoneNumber1: "Phone Number:",
         phoneNumber: "Phone Number:",
         callButton: "Call",
         loggingIn: "Logging in...",
+        webForm: "Fill out Webform",
         back: "Back",
+        doctor: "Doctor View",
+        patient: "Patient View",
         // medical-record
         medicalRecordSummary: "Medical Record Summary",
         patientInformation: "Patient Information",
@@ -34,59 +37,66 @@ var translations = {
         // index
         selectLanguage: "अपनी भाषा चुनें",
         // login
-        accessMedicalRecords: "मेडिकल रिकॉर्ड तक पहुंचें",
+        accessMedicalRecords: "चिकित्सा रिकॉर्ड्स तक पहुंचें",
         login: "लॉगिन",
-        username: "फोन नंबर:",
+        username: "रोगी का फोन नंबर:",
         password: "पासवर्ड:",
         loginButton: "लॉग इन करें",
-        callTelemedicineHub: "टेलीमेडिसिन हब को कॉल करें",
+        callTelemedicineHub: "टेलीमेडिसिन हब पर कॉल करें",
+        phoneNumber1: "फोन नंबर:",
         phoneNumber: "फोन नंबर:",
         callButton: "कॉल करें",
         loggingIn: "लॉग इन हो रहा है...",
+        webForm: "वेबफॉर्म भरें",
         back: "वापस",
+        doctor: "डॉक्टर दृश्य",
+        patient: "रोगी दृश्य",
         // medical-record
-        medicalRecordSummary: "मेडिकल रिकॉर्ड सारांश",
+        medicalRecordSummary: "चिकित्सा रिकॉर्ड सारांश",
         patientInformation: "रोगी की जानकारी",
         firstName: "पहला नाम",
         lastName: "अंतिम नाम",
         dateOfBirth: "जन्म तिथि",
         gender: "लिंग",
         height: "ऊंचाई (सेमी)",
-        weight: "वजन (किग्रा)",
-        chronologicalSummary: "कालानुक्रमिक मेडिकल रिकॉर्ड सारांश",
+        weight: "वजन (किलो)",
+        chronologicalSummary: "कालक्रमानुसार चिकित्सा रिकॉर्ड सारांश",
         dateTime: "दिनांक/समय",
-        encounterSummary: "मुठभेड़ सारांश",
+        encounterSummary: "मुलाकात का सारांश",
         loading: "लोड हो रहा है..."
     },
-    mr: {
+    ta: {
         // index
-        selectLanguage: "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்",
+        selectLanguage: "మీ భాషను ఎంచుకోండి",
         // login
-        accessMedicalRecords: "மருத்துவ பதிவுகளை அணுகவும்",
-        login: "உள்நுழை",
-        username: "தொலைபேசி எண்:",
-        password: "கடவுச்சொல்:",
-        loginButton: "உள்நுழை",
-        callTelemedicineHub: "தொலை மருத்துவ மையத்திற்கு அழைக்கவும்",
-        phoneNumber: "தொலைபேசி எண்:",
-        callButton: "அழைக்கவும்",
-        loggingIn: "உள்நுழைகிறது...",
-        back: "பின்செல்",
+        accessMedicalRecords: "వైద్య రికార్డులకు ప్రాప్యత",
+        login: "లాగిన్",
+        username: "రోగి ఫోన్ నంబర్:",
+        password: "పాస్వర్డ్:",
+        loginButton: "లాగిన్ చేయండి",
+        callTelemedicineHub: "టెలిమెడిసిన్ హబ్ కు కాల్ చేయండి",
+        phoneNumber1: "ఫోన్ నంబర్:",
+        phoneNumber: "ఫోన్ నంబర్:",
+        callButton: "కాల్ చేయండి",
+        loggingIn: "లాగిన్ అవుతున్నాము...",
+        webForm: "వెబ్ ఫార్మ్ నింపండి",
+        back: "తిరిగి వెళ్ళండి",
+        doctor: "డాక్టర్ వీక్షణ",
+        patient: "రోగి వీక్షణ",
         // medical-record
-        medicalRecordSummary: "மருத்துவ பதிவு சுருக்கம்",
-        patientInformation: "நோயாளர் தகவல்",
-        firstName: "முதல் பெயர்",
-        lastName: "கடைசி பெயர்",
-        dateOfBirth: "பிறந்த தேதி",
-        gender: "பாலினம்",
-        height: "உயரம் (cm)",
-        weight: "எடை (kg)",
-        chronologicalSummary: "காலவரிசைப்படி மருத்துவ பதிவு சுருக்கம்",
-        dateTime: "தேதி/நேரம்",
-        encounterSummary: "சந்திப்பு சுருக்கம்",
-        loading: "ஏற்றப்படுகிறது..."
+        medicalRecordSummary: "వైద్య రికార్డు సారాంశం",
+        patientInformation: "రోగి సమాచారం",
+        firstName: "మొదటి పేరు",
+        lastName: "చివరి పేరు",
+        dateOfBirth: "పుట్టిన తేది",
+        gender: "లింగం",
+        height: "ఎత్తు (సెం.మీ)",
+        weight: "బరువు (కిలోలలో)",
+        chronologicalSummary: "కాలక్రమములో వైద్య రికార్డు సారాంశం",
+        dateTime: "తేదీ/సమయం",
+        encounterSummary: "సమావేశ సారాంశం",
+        loading: "లోడ్ అవుతోంది..."
     }
-    
 };
 
 // Function to set language
@@ -128,6 +138,16 @@ function translatePage() {
         loginHeading.textContent = trans.login;
     }
 
+    var doctorHeading = document.getElementById('doctor-heading');
+    if (doctorHeading) {
+        doctorHeading.textContent = trans.doctor;
+    }
+
+    var patientHeading = document.getElementById('patient-heading');
+    if (patientHeading) {
+        patientHeading.textContent = trans.patient;
+    }
+
     var usernameLabel = document.getElementById('username-label');
     if (usernameLabel) {
         usernameLabel.textContent = trans.username;
@@ -148,12 +168,12 @@ function translatePage() {
         callHeading.textContent = trans.callTelemedicineHub;
     }
 
-    var phoneLabel = document.getElementById('phone-label');
+    var phoneLabel = document.querySelector('label[for="to_number"]');
     if (phoneLabel) {
         phoneLabel.textContent = trans.phoneNumber;
     }
 
-    var callButton = document.getElementById('call-button');
+    var callButton = document.querySelector('input[type="submit"][value="Call"]');
     if (callButton) {
         callButton.value = trans.callButton;
     }
@@ -178,7 +198,33 @@ function translatePage() {
         loadingText.textContent = trans.loggingIn;
     }
 
-    // medical-record
+    // webform link
+    var webformLink = document.getElementById('webform-link');
+    if (webformLink) {
+        webformLink.textContent = trans.webForm;
+    }
+
+    // Loading screen text
+    var loadingScreenText = document.getElementById('loading-text');
+    if (loadingScreenText) {
+        loadingScreenText.textContent = trans.loading;
+    }
+
+    var backButton = document.getElementById('back-button');
+    if (backButton) {
+        backButton.textContent = trans.back;
+    }
+
+    var patientInformation = document.getElementById('patient-information');
+    if (backButton) {
+        backButton.textContent = trans.back;
+    }
+    var backButton = document.getElementById('back-button');
+    if (backButton) {
+        backButton.textContent = trans.back;
+    }
+    
+    // Medical Record Section
     var medicalRecordTitle = document.getElementById('medical-record-title');
     if (medicalRecordTitle) {
         medicalRecordTitle.textContent = trans.medicalRecordSummary;
@@ -233,17 +279,8 @@ function translatePage() {
     if (encounterSummaryHeader) {
         encounterSummaryHeader.textContent = trans.encounterSummary;
     }
-
-    var loadingScreenText = document.getElementById('loading-text');
-    if (loadingScreenText) {
-        loadingScreenText.textContent = trans.loading;
-    }
-
-    var backButton = document.getElementById('back-button');
-    if (backButton) {
-        backButton.textContent = trans.back;
-    }
 }
+
 
 // Event listeners for language selection buttons
 document.addEventListener('DOMContentLoaded', function() {
@@ -271,7 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
     translatePage();
 });
 
-
 function fetchMedicalRecord() {
     return fetch('/static/user_data/user_history_+12223334444.json')  // Correct path to the file
         .then(response => {
@@ -292,10 +328,8 @@ var loginForm = document.getElementById('login-form');
 if (loginForm) {
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();  // Prevent the form from submitting normally
-
         var enteredUsername = document.getElementById('username').value;
         var enteredPassword = document.getElementById('password').value;
-
         // Fetch the medical record JSON (assuming it contains the user credentials)
         fetchMedicalRecord().then(record => {
             if (record) {
@@ -321,7 +355,6 @@ if (loginForm) {
         });
     });
 }
-
 
 // Back button functionality on medical-record
 function handleBackButtonClick() {

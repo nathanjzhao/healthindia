@@ -62,16 +62,16 @@ language_mappings = {
         'error_occurred': "क्षमा करें, एक त्रुटि हुई। कृपया बाद में पुनः प्रयास करें।",
         'gather_language': 'hi-IN'
     },
-    'mr': {
-        'welcome': "नमस्कार, AI-सहाय्यक वैद्यकीय निदानात आपले स्वागत आहे.",
-        'welcome_back': "नमस्कार {}, AI-सहाय्यक वैद्यकीय निदानात आपले पुन्हा स्वागत आहे.",
-        'didnt_catch': "क्षमा करा, मला ते समजले नाही. कृपया पुन्हा सांगा?",
-        'couldnt_understand': "मला तुमचे उत्तर समजले नाही.",
-        'consult_professional': "तुमच्या उत्तरांच्या आधारे, तुम्हाला {} असू शकते. कृपया योग्य निदानासाठी वैद्यकीय व्यावसायिकांचा सल्ला घ्या.",
-        'thank_you': "तुमच्या वेळेबद्दल धन्यवाद. निरोप!",
-        'error_processing': "क्षमा करा, मला तुमचे उत्तर प्रक्रिया करण्यात अडचण येत आहे. पुन्हा प्रयत्न करू या.",
-        'error_occurred': "क्षमा करा, एक त्रुटी आली. कृपया नंतर पुन्हा प्रयत्न करा.",
-        'gather_language': 'mr-IN'
+    'ta': {
+    'welcome': "வணக்கம், AI உதவியுடன் மருத்துவ பரிசோதனைக்கு உங்களை வரவேற்கிறோம்.",
+    'welcome_back': "வணக்கம் {}, AI உதவியுடன் மருத்துவ பரிசோதனைக்கு உங்களை மீண்டும் வரவேற்கிறோம்.",
+    'didnt_catch': "மன்னிக்கவும், எனக்கு அது புரியவில்லை. தயவுசெய்து மீண்டும் கூறுங்கள்?",
+    'couldnt_understand': "உங்கள் பதில் எனக்கு புரியவில்லை.",
+    'consult_professional': "உங்கள் பதில்களின் அடிப்படையில், உங்களுக்கு {} இருக்கக்கூடும். சரியான பரிசோதனைக்கு மருத்துவரின் ஆலோசனை பெறவும்.",
+    'thank_you': "உங்கள் நேரத்திற்கு நன்றி. வணக்கம்!",
+    'error_processing': "மன்னிக்கவும், உங்கள் பதிலை செயலாக்க முயற்சிக்கும்போது சிக்கல் ஏற்பட்டது. மீண்டும் முயல்கின்றேன்.",
+    'error_occurred': "மன்னிக்கவும், ஒரு பிழை ஏற்பட்டது. பிறகு மீண்டும் முயற்சிக்கவும்.",
+    'gather_language': 'ta-IN'
     }
 }
 
@@ -101,7 +101,7 @@ def login():
         if not to_number.startswith('+') or not to_number[1:].isdigit():
             return "Invalid phone number format. Please use E.164 format.", 400
         
-        contact_method = request.form['contact_method']
+        contact_method = request.form.get('contact_method', 'call')  # Default to 'call' if not provided
         
         try:
             user_history = load_user_history(to_number)
@@ -372,6 +372,10 @@ def set_language():
     language = request.form.get('language')
     session['language'] = language
     return redirect(url_for('login'))
+
+@app.route('/webform')
+def webform():
+    return render_template('webform.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

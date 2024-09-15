@@ -10,63 +10,245 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f0f2f5;
     color: #333;
-    padding: 80px;
+    padding: 40px;
 }
 
-/* Container Styles */
-.container {
-    width: 80%;
-    max-width: 800px;
+/* Containers */
+.container, .form-container, .main-container {
+    width: 90%;
+    max-width: 1000px;
     margin: 40px auto;
-    padding: 40px;
+    padding: 30px;
     background-color: #fff;
-    border-radius: 8px;
+    border-radius: 10px;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 }
 
-/* Heading Styles */
-h1 {
+/* Headers */
+h1, h2, h3 {
+    color: #007bff;
     text-align: center;
     margin-bottom: 30px;
-    color: #007bff;
+}
+
+h1 {
     font-size: 32px;
 }
 
-/* Call Info Styles */
-.call-info {
+h2 {
+    font-size: 24px;
+}
+
+h3 {
+    font-size: 20px;
     margin-bottom: 20px;
 }
 
-.call-info p {
+button, input[type="submit"], a {
+    display: inline-block; /* Buttons will only take up as much width as their content */
+    padding: 8px 20px; /* Adjust padding for a slimmer look */
+    margin-top: 10px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px; /* Smaller border-radius for less rounded corners */
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover, input[type="submit"]:hover, a:hover {
+    background-color: #0056b3;
+}
+
+/* Back Button */
+#back-button, #language-back-button {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    padding: 5px 10px; /* Slimmer back button */
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    z-index: 500;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: inline-block; /* Ensures the back button only takes up the necessary width */
+    text-align: center;
+}
+
+#back-button:hover, #language-back-button:hover {
+    background-color: #0056b3;
+}
+
+/* Forms */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"], input[type="password"], input[type="number"], input[type="date"], textarea, select {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #007bff;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+    height: 120px;
+}
+
+select {
+    padding: 12px;
+}
+
+/* Main Container */
+.main-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+/* Left and Right Side Styles */
+.left-side, .right-side {
+    flex: 1;
+    min-width: 300px;
+    max-width: 450px;
+    padding: 30px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.left-side {
+    background-color: #eee9e9;
+}
+
+/* Label Styling */
+label {
+    font-weight: bold;
+    color: #555;
+    display: block;
     margin-bottom: 10px;
+}
+
+/* Input and Button side by side under the label */
+.call-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.call-container input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.call-button {
+    width: 45px;
+    height: 45px;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.call-button i {
+    color: white;
     font-size: 18px;
 }
 
-/* Conversation Styles */
-#conversation {
-    margin-top: 20px; 
+.call-button:hover {
+    background-color: #0056b3;
+}
+
+/* Center the Webform Button */
+.form-section a#webform-link {
+    display: block;
+    margin: 29px auto;
+    width: fit-content;
+}
+
+/* Responsive Design */
+@media (max-width: 800px) {
+    .main-container {
+        flex-direction: column;
+    }
+
+    .left-side, .right-side {
+        width: 100%;
+    }
+}
+
+/* Tables */
+table {
     width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
     border: 1px solid #ddd;
+}
+
+table th {
+    background-color: #007bff;
+    color: white;
+}
+
+table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Conversation Container */
+#conversation {
+    margin-top: 20px;
     padding: 20px;
+    border: 1px solid #ddd;
+    background-color: #f9f9f9;
+    border-radius: 10px;
     height: 400px;
     overflow-y: auto;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
-    transition: background-color 0.3s; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .message {
-    margin-bottom: 10px;
     padding: 10px;
+    margin-bottom: 10px;
     border-radius: 5px;
     font-size: 16px;
-    transition: transform 0.2s; 
-}
-
-.ai {
-    background-color: #e6f3ff;
-    text-align: left;
+    line-height: 1.5;
 }
 
 .user {
@@ -74,83 +256,61 @@ h1 {
     text-align: right;
 }
 
-.message:hover {
-    transform: scale(1.02); 
+.ai {
+    background-color: #e6f3ff;
+    text-align: left;
 }
 
-/* Responsive Design */
-@media (max-width: 800px) {
-    .container {
-        width: 95%;
-        padding: 30px 20px;
-    }
-
-    h1 {
-        font-size: 28px;
-    }
-
-    .call-info p {
-        font-size: 16px;
-    }
-
-    #conversation {
-        height: 300px;
-    }
-
-    .message {
-        font-size: 14px;
-    }
+/* Loading Screen */
+.loading-screen {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: center;
+    left: center;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(240, 242, 245, 0.9);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
-/* Logo Styles */
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 8px solid #ddd;
+    border-top: 8px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-screen p {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #333;
+}
+
+/* Logo Styling */
 .logo {
     display: block;
-    margin: 20px auto 30px auto; 
-    max-width: 150px; 
+    max-width: 150px;
     height: auto;
+    margin: 20px auto;
 }
 
-/* Back Button Styles (shared styles) */
-#back-button,
-#language-back-button {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    padding: 10px 15px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-    z-index: 1000;
-}
-
-#back-button:hover,
-#language-back-button:hover {
-    background-color: #0056b3;
-}
-
-/* Language Selection Container */
-.language-container {
-    width: 80%;
-    max-width: 800px;
-    margin: 80px auto;
-    text-align: center;
-}
-
-.language-container h1 {
-    margin-bottom: 50px;
-    color: #007bff;
-    font-size: 32px;
-}
-
+/* Language Selection */
 .language-selection {
     display: flex;
-    flex-wrap: wrap;
     justify-content: center;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .language-button {
@@ -168,247 +328,32 @@ h1 {
     background-color: #0056b3;
 }
 
-/* Container for Login Form */
-.login-container {
-    width: 80%;
-    max-width: 1000px;
-    margin: 80px auto; /* Center the container */
-    text-align: center;
-}
-
-.login-container h1 {
-    margin-bottom: 30px;
-    color: #007bff;
-    font-size: 28px;
-}
-
-/* Forms Container Styles */
-.forms-container {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin-top: 20px;
-}
-
-.form-section {
-    flex: 1;
-    min-width: 280px;
-    margin: 10px;
-    background-color: #fff;
-    padding: 20px 25px;
-    border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    text-align: left;
-}
-
-.form-section h2 {
-    margin-bottom: 20px;
-    color: #007bff;
-    font-size: 24px;
-    text-align: center;
-}
-
-/* Form input styles */
-.form-section label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #555;
-}
-
-.form-section input[type="text"],
-.form-section input[type="password"] {
-    width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 50px;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-.form-section input[type="text"]:focus,
-.form-section input[type="password"]:focus {
-    border-color: #007bff;
-}
-
-.form-section button[type="submit"],
-.form-section input[type="submit"] {
-    width: 100%;
-    padding: 12px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
-}
-
-.form-section button[type="submit"]:hover,
-.form-section input[type="submit"]:hover {
-    background-color: #0056b3;
-}
-
-/* Container for Medical Record */
-.container {
-    width: 90%;
-    max-width: 1000px;
-    margin: 80px auto; /* Center the container */
-    padding: 40px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
-.container h1 {
-    text-align: center;
-    margin-bottom: 50px;
-    color: #007bff;
-    font-size: 32px;
-}
-
-.patient-info,
-.record-summary {
-    margin-bottom: 40px;
-}
-
-.patient-info h2,
-.record-summary h2 {
-    margin-bottom: 20px;
-    color: #333;
-    font-size: 24px;
-    border-bottom: 2px solid #007bff;
-    padding-bottom: 10px;
-}
-
-.patient-info table,
-.record-summary table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.patient-info td,
-.patient-info th,
-.record-summary td,
-.record-summary th {
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    font-size: 16px;
-}
-
-.record-table th {
-    background-color: #007bff;
-    color: white;
-    font-weight: normal;
-}
-
-.record-table tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-/* Loading screen styles */
-.loading-screen {
-    display: none; /* Initially hidden */
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(240, 242, 245, 0.9);
-    z-index: 9999;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-/* Spinner styles */
-.spinner {
-    width: 60px;
-    height: 60px;
-    border: 8px solid #ddd;
-    border-top: 8px solid #007bff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-.loading-screen p {
-    margin-top: 20px;
-    font-size: 20px;
-    color: #333;
-}
-
-/* Animation keyframes */
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 /* Responsive Design */
 @media (max-width: 800px) {
-    .forms-container {
+    .main-container {
         flex-direction: column;
-        align-items: center;
     }
 
-    .form-section {
-        margin: 10px 0;
+    .left-side, .right-side {
         width: 100%;
-        max-width: 500px;
     }
 
-    #back-button,
-    #language-back-button {
-        top: 10px;
-        left: 10px;
-        padding: 8px 12px;
-        font-size: 14px;
+    .container, .form-container {
+        width: 95%;
+        padding: 20px;
     }
 
-    .login-container h1,
-    .language-container h1 {
-        font-size: 24px;
-    }
-
-    .form-section h2 {
-        font-size: 22px;
-    }
-
-    .form-section input[type="text"],
-    .form-section input[type="password"] {
-        padding: 10px 12px;
-    }
-
-    .form-section button[type="submit"],
-    .form-section input[type="submit"],
-    .language-button {
-        padding: 10px;
-        font-size: 14px;
-    }
-
-    .container {
-        padding: 30px 20px;
-    }
-
-    .container h1 {
+    h1 {
         font-size: 28px;
     }
 
-    .patient-info h2,
-    .record-summary h2 {
-        font-size: 20px;
-    }
-
-    .patient-info td,
-    .patient-info th,
-    .record-summary td,
-    .record-summary th {
+    table th, table td {
         font-size: 14px;
         padding: 10px;
     }
-
-    .logo {
-        max-width: 120px;
+    
+    .message {
+        font-size: 14px;
     }
 }
+
