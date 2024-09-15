@@ -99,6 +99,10 @@ def rephrase_question(original_question, user_response, invalid_response=False, 
         for date, info in entry.items():
             user_history_list.extend([f"- {i}" for i in info])
     
+    # Add current_call information to user_history_list
+    if 'current_call' in user_history:
+        user_history_list.extend([f"- Current Call: {call}" for call in user_history['current_call']])
+    
     user_history_list.extend([
         f"- Age: {user_history.get('age', 'N/A')}",
         f"- Gender: {user_history.get('gender', 'N/A')}",
@@ -118,6 +122,7 @@ def rephrase_question(original_question, user_response, invalid_response=False, 
         2. Avoid repeating the user's response or asking an unrelated question.
         3. Rephrase the original question to provide more clarity or give the user guidance to answer correctly.
         4. Leverage previous conversations and the user's history to personalize the response.
+        5. Make the response concise.
 
         Example:
         Original Question: "How old are you?"
@@ -139,6 +144,7 @@ def rephrase_question(original_question, user_response, invalid_response=False, 
         1. Maintain the core intent of the original question.
         2. Ensure the rephrased question logically follows the context of the user's previous responses.
         3. Leverage previous conversations and user history to adapt the question for a personalized experience.
+        4. Make the response concise.
 
         Respond ONLY with the rephrased question, without any additional text or labels.
 

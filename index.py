@@ -1,5 +1,6 @@
 from datetime import datetime
 import logging
+import re
 from flask import Flask, redirect, request, render_template, jsonify, Response, stream_with_context, session, url_for
 from twilio.twiml.voice_response import VoiceResponse, Gather
 from twilio.twiml.messaging_response import MessagingResponse
@@ -101,7 +102,7 @@ def login():
         if not to_number.startswith('+') or not to_number[1:].isdigit():
             return "Invalid phone number format. Please use E.164 format.", 400
         
-        contact_method = request.form['contact_method']
+        contact_method = request.form.get('contact_method', 'call')  # Default to 'call' if not provided
         
         try:
             user_history = load_user_history(to_number)
@@ -130,7 +131,9 @@ def login():
                 call = client.calls.create(
                     twiml=str(twiml),
                     to=to_number,
-                    from_=twilio_phone_number
+                    from_=twilio_phone_number,
+                    status_callback=f'{ngrok_url}/call_status',
+                    status_callback_event=['completed', 'busy', 'no-answer', 'failed', 'canceled']
                 )
 
                 # Add the first message to conversation history
@@ -253,7 +256,10 @@ def handle_input():
                     
                     if predictionState not in decisionTree:
                         ai_response = language_mappings[language]['consult_professional'].format(predictionState)
-                        finalize_call(user_history)
+                        redirect_url = finalize_call(user_history)
+                        twiml.say(ai_response)
+                        twiml.hangup()
+                        return redirect(redirect_url)
                     else:
                         next_question = decisionTree[predictionState]["question"]
                         ai_response = rephrase_question(next_question, user_input, False, user_history)
@@ -261,10 +267,11 @@ def handle_input():
                 logger.info(f"AI response: {ai_response}")
 
                 if ai_response.lower() == "stop call":
-                    finalize_call(user_history)
+                    redirect_url = finalize_call(user_history)
                     ai_response = language_mappings[language]['thank_you']
                     twiml.say(ai_response)
                     twiml.hangup()
+                    return redirect(redirect_url)
                 else:
                     s3_url = text_to_speech(ai_response, language)
                     if s3_url:
@@ -273,13 +280,14 @@ def handle_input():
                         twiml.say(ai_response)
                 
                 save_user_history(to_number, user_history)
-                print("user_history: ", user_history)
             except Exception as e:
                 logger.error(f"Error processing input: {str(e)}")
                 ai_response = language_mappings[language]['error_processing']
                 twiml.say(ai_response)
 
-                finalize_call(user_history)
+                redirect_url = finalize_call(user_history)
+                twiml.hangup()
+                return redirect(redirect_url)
 
             # Store AI response in conversation history
             conversation_history[call_sid].append({"speaker": "ai", "text": ai_response})
@@ -308,6 +316,9 @@ def handle_input():
         twiml = VoiceResponse()
         error_message = language_mappings[language]['error_occurred']
         twiml.say(error_message)
+        twiml.hangup()
+        
+        redirect_url = finalize_call(user_history)
         
         # Send a text message to continue the conversation
         client.messages.create(
@@ -316,11 +327,10 @@ def handle_input():
             to=to_number
         )
         
-        return str(twiml), 500
+        return redirect(redirect_url)
 
 @app.route('/stream/<call_sid>')
 def stream(call_sid):
-    global conversation_history
     def event_stream():
         last_message_index = 0
         while True:
@@ -334,35 +344,44 @@ def stream(call_sid):
 
     return Response(stream_with_context(event_stream()), content_type='text/event-stream')
 
-# Path to the JSON file
-JSON_FILE = 'medical_record.json'
-
 # Utility to read the JSON file
-def read_medical_record():
-    if os.path.exists(JSON_FILE):
-        with open(JSON_FILE, 'r') as file:
+def read_medical_record(file_path):
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as file:
             return json.load(file)
     return {}
 
 # Utility to write to the JSON file
-def write_medical_record(data):
-    with open(JSON_FILE, 'w') as file:
+def write_medical_record(data, file_path):
+    with open(file_path, 'w') as file:
         json.dump(data, file, indent=4)
 
-def add_entry_to_medical_record(new_entries):
+def add_entry_to_medical_record(new_entries, file_path):
     # Read the existing record
-    record = read_medical_record()
+    record = read_medical_record(file_path)
     # Get the current time
-    current_time = datetime.now().strftime("%m/%d/%Y %I:%M%p")
-    # Add the new entry using the current time as the key
+    current_time = datetime.now().strftime("%m/%d/%Y %I:%M%") # Add the new entry using the current time as the key
     record['entries'].append({current_time: new_entries})
     # Write the updated record back to the JSON file
-    write_medical_record(record)
+    write_medical_record(record, file_path)
 
 @app.route('/medical-record', methods=['GET'])
 def medical_record():
+    # Get the phone number from query parameters
+    phone_number = request.args.get('phone_number')
+    
+    if not phone_number:
+        return "Phone number is required", 400
+
+    # Sanitize the phone number to prevent directory traversal
+    phone_number = ''.join(filter(str.isalnum, phone_number))
+
+    # Construct the JSON file path -- need + beforehand because queryargs doesn't accept +
+    json_file = f'user_history_+{phone_number}.json'
+    json_file_path = os.path.join(app.root_path, 'static', 'user_data', json_file)
     # Read the medical record data from the JSON file
-    record = read_medical_record()
+    record = read_medical_record(json_file_path)
+
     # Render the medical-record.html template and pass the record data
     return render_template('medical-record.html', record=record)
 
@@ -371,6 +390,34 @@ def set_language():
     language = request.form.get('language')
     session['language'] = language
     return redirect(url_for('login'))
+
+@app.template_filter('remove_trailing_punctuation')
+def remove_trailing_punctuation(text):
+    return re.sub(r'[.!?]+$', '', text)
+
+@app.route("/call_status", methods=['POST'])
+def call_status():
+    call_sid = request.form.get('CallSid')
+    call_status = request.form.get('CallStatus')
+    to_number = request.form.get('To')
+
+    if call_status in ['completed', 'busy', 'no-answer', 'failed', 'canceled']:
+        print("Call status:", call_status)
+        user_history = load_user_history(to_number)
+        finalize_call(user_history)
+        save_user_history(to_number, user_history)
+
+        # Store the call status and medical record URL
+        if call_sid not in conversation_history:
+            conversation_history[call_sid] = []
+        conversation_history[call_sid].append({
+            "type": "call_status",
+            "status": call_status,
+            "medical_record_url": url_for('medical_record', phone_number=to_number[1:])
+        })
+
+    print("Call status:", call_status)
+    return '', 204  # No content response
 
 if __name__ == "__main__":
     app.run(debug=True)

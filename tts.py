@@ -65,6 +65,7 @@ def text_to_speech(text, language='en'):
     # Check if the response is successful and contains audio data
     if response.status_code != 200 or response.headers.get("Content-Type") != "audio/mpeg":
         print("Failed to retrieve valid audio data.")
+        print("response.text: ", response.text)
         return None
 
     # Step 2: Save the audio data as binary data in memory

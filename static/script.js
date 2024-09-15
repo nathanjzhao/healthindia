@@ -8,7 +8,7 @@ var translations = {
         // login
         accessMedicalRecords: "Access Medical Records",
         login: "Login",
-        username: "Username/ID:",
+        username: "Phone Number:",
         password: "Password:",
         loginButton: "Log In",
         callTelemedicineHub: "Call Telemedicine Hub",
@@ -32,11 +32,11 @@ var translations = {
     },
     hi: {
         // index
-        selectLanguage: "अपनी भाषा चुनें",
+        selectLanguage: "अपनी भाषा चुनं",
         // login
         accessMedicalRecords: "मेडिकल रिकॉर्ड तक पहुंचें",
         login: "लॉगिन",
-        username: "उपयोगकर्ता नाम/आईडी:",
+        username: "फोन नंबर:",
         password: "पासवर्ड:",
         loginButton: "लॉग इन करें",
         callTelemedicineHub: "टेलीमेडिसिन हब को कॉल करें",
@@ -55,36 +55,36 @@ var translations = {
         weight: "वजन (किग्रा)",
         chronologicalSummary: "कालानुक्रमिक मेडिकल रिकॉर्ड सारांश",
         dateTime: "दिनांक/समय",
-        encounterSummary: "मुठभेड़ सारांश",
+        encounterSummary: "मुठभेड़ सारंश",
         loading: "लोड हो रहा है..."
     },
     mr: {
-        // index
-        selectLanguage: "आपली भाषा निवडा",
-        // login
-        accessMedicalRecords: "वैद्यकीय नोंदी प्रवेश करा",
-        login: "लॉगिन",
-        username: "वापरकर्ता नाव/आयडी:",
-        password: "पासवर्ड:",
-        loginButton: "लॉग इन",
-        callTelemedicineHub: "टेलिमेडिसिन हबला कॉल करा",
-        phoneNumber: "फोन नंबर:",
-        callButton: "कॉल",
-        loggingIn: "लॉग इन करत आहे...",
-        back: "मागे",
-        // medical-record
-        medicalRecordSummary: "वैद्यकीय नोंदींचा सारांश",
-        patientInformation: "रुग्णाची माहिती",
-        firstName: "पहिले नाव",
-        lastName: "आडनाव",
-        dateOfBirth: "जन्मतारीख",
-        gender: "लिंग",
-        height: "उंची (सेमी)",
-        weight: "वजन (कि.ग्रॅ.)",
-        chronologicalSummary: "कालानुक्रमिक वैद्यकीय नोंदींचा सारांश",
-        dateTime: "दिनांक/वेळ",
-        encounterSummary: "सामना सारांश",
-        loading: "लोड करत आहे..."
+    // index
+    selectLanguage: "உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்",
+    // login
+    accessMedicalRecords: "மருத்துவ பதிவுகளை அணுகவும்",
+    login: "உள்நுழை",
+    username: "தொலைபேசி எண்:",
+    password: "கடவுச்சொல்:",
+    loginButton: "உள்நுழை",
+    callTelemedicineHub: "தொலை மருத்துவ மையத்திற்கு அழைக்கவும்",
+    phoneNumber: "தொலைபேசி எண்:",
+    callButton: "அழைக்கவும்",
+    loggingIn: "உள்நுழைகிறது...",
+    back: "பின்செல்",
+    // medical-record
+    medicalRecordSummary: "மருத்துவ பதிவு சுருக்கம்",
+    patientInformation: "நோயாளர் தகவல்",
+    firstName: "முதல் பெயர்",
+    lastName: "கடைசி பெயர்",
+    dateOfBirth: "பிறந்த தேதி",
+    gender: "பாலினம்",
+    height: "உயரம் (cm)",
+    weight: "எடை (kg)",
+    chronologicalSummary: "காலவரிசைப்படி மருத்துவ பதிவு சுருக்கம்",
+    dateTime: "தேதி/நேரம்",
+    encounterSummary: "சந்திப்பு சுருக்கம்",
+    loading: "ஏற்றப்படுகிறது..."
     }
     
 };
@@ -271,36 +271,71 @@ document.addEventListener('DOMContentLoaded', function() {
     translatePage();
 });
 
-// Existing login functionality
-var users = {
-    "admin": "password123",
-    "doctor": "securepass",
-    "nurse": "nursepassword"
-};
+function fetchMedicalRecord(phone_number) {
+    return fetch('/static/user_data/user_history_' + phone_number + '.json')  // Correct path to the file
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            console.log(response);
+            return response.json();
+        })
+        .catch(error => {
+            console.error('Error fetching medical record:', error);
+            alert("An error occurred while fetching data.");
+        });
+}
 
+// Function to format phone number
+function formatPhoneNumber(phoneNumber) {
+    const cleaned = phoneNumber.replace(/\D/g, '');
+    if (phoneNumber.startsWith('+1')) {
+        return `${cleaned}`;
+    }
+    
+    return `+1${cleaned}`;
+}
 
 // Handle login form submission
 var loginForm = document.getElementById('login-form');
+
 if (loginForm) {
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();  // Prevent the form from submitting normally
 
-        var username = document.getElementById('username').value;
-        var password = document.getElementById('password').value;
+        // Presume the username is the phone number
+        var enteredUsername = formatPhoneNumber(document.getElementById('username').value);
+        var enteredPassword = document.getElementById('password').value;
+        console.log("enteredUsername: ", enteredUsername);
+        console.log("enteredPassword: ", enteredPassword);
 
-        // Check if the username and password are correct
-        if (users[username] && users[username] === password) {
-            // Show the loading screen
-            document.getElementById('loading-screen').style.display = 'flex';
+        console.log("asd: ", document.getElementById('username').value);
 
-            // Simulate the login process
-            setTimeout(function() {
-                // After login process, redirect to medical records
-                window.location.href = "medical-record";
-            }, 1000);
-        } else {
-            alert("Invalid username or password. Please try again.");
-        }
+        // Fetch the medical record JSON (assuming it contains the user credentials)
+        fetchMedicalRecord(enteredUsername).then(record => {
+            if (record) {
+                var storedUsername = record.username;
+                var storedPassword = record.password;
+                console.log("storedUsername: ", storedUsername);
+                console.log("storedPassword: ", storedPassword);
+
+                // Check if the entered credentials match the stored credentials
+                if (enteredUsername === storedUsername && enteredPassword === storedPassword) {
+                    // Show the loading screen
+                    document.getElementById('loading-screen').style.display = 'flex';
+
+                    // Simulate the login process
+                    setTimeout(function() {
+                        // After login process, redirect to medical records
+                        window.location.href = `medical-record?phone_number=${encodeURIComponent(enteredUsername)}`;
+                    }, 1000);
+                } else {
+                    alert("Invalid username or password. Please try again.");
+                }
+            } else {
+                alert("Failed to retrieve user data.");
+            }
+        });
     });
 }
 

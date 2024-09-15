@@ -9,31 +9,47 @@
 </head>
 <body>
     <h1>Call in Progress</h1>
-    <p>Calling: <strong><span id="to-number">{{ to_number }}</span></strong></p>
-    <p>Call SID: <strong><span id="call-sid">{{ call_sid }}</span></strong></p>
+    <p>Calling: <span id="to-number">{{ to_number }}</span></p>
+    <p>Call SID: <span id="call-sid">{{ call_sid }}</span></p>
     
     <div id="conversation"></div>
 
     <script>
-        const callSid = '{{ call_sid }}';
-        const conversation = document.getElementById('conversation');
+      const callSid = '{{ call_sid }}';
+      const conversation = document.getElementById('conversation');
 
-        const eventSource = new EventSource(`/stream/${callSid}`);
+      const eventSource = new EventSource(`/stream/${callSid}`);
 
-        eventSource.onmessage = function(event) {
-            console.log(event.data);
-            const message = JSON.parse(event.data);
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${message.speaker}`;
-            messageDiv.innerHTML = `<strong>${message.speaker === 'ai' ? 'AI' : 'User'}:</strong> ${message.text}`;
-            conversation.appendChild(messageDiv);
-            conversation.scrollTop = conversation.scrollHeight;
-        };
+      eventSource.onmessage = function(event) {
+          console.log(event.data);
+          const data = JSON.parse(event.data);
 
-        eventSource.onerror = function(error) {
-            console.error('EventSource failed:', error);
-            eventSource.close();
-        };
-    </script>
+          if (data.type === "call_status") {
+              // Handle call status update
+              const statusDiv = document.createElement('div');
+              statusDiv.className = 'message status';
+              statusDiv.innerHTML = `<strong>Status:</strong> ${data.status}`;
+              conversation.appendChild(statusDiv);
+
+              if (data.status === 'completed' || data.status === 'failed' || data.status === 'busy' || data.status === 'no-answer' || data.status === 'canceled') {
+                  eventSource.close();
+                  window.location.href = data.medical_record_url;
+              }
+          } else {
+              // Handle regular conversation updates
+              const messageDiv = document.createElement('div');
+              messageDiv.className = `message ${data.speaker}`;
+              messageDiv.innerHTML = `<strong>${data.speaker === 'ai' ? 'AI' : 'User'}:</strong> ${data.text}`;
+              conversation.appendChild(messageDiv);
+          }
+
+          conversation.scrollTop = conversation.scrollHeight;
+      };
+
+      eventSource.onerror = function(error) {
+          console.error('EventSource failed:', error);
+          eventSource.close();
+      };
+  </script>
 </body>
 </html>
