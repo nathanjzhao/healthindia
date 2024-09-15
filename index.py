@@ -2,10 +2,10 @@ from datetime import datetime
 import logging
 from flask import Flask, redirect, request, render_template, jsonify, Response, stream_with_context, session, url_for
 from twilio.twiml.voice_response import VoiceResponse, Gather
+from twilio.twiml.messaging_response import MessagingResponse
 from twilio.rest import Client
 from dotenv import load_dotenv
 import os
-import requests
 import time
 from flask_cors import CORS  
 from tts import text_to_speech
@@ -101,54 +101,114 @@ def login():
         if not to_number.startswith('+') or not to_number[1:].isdigit():
             return "Invalid phone number format. Please use E.164 format.", 400
         
+        contact_method = request.form['contact_method']
+        
         try:
             user_history = load_user_history(to_number)
             
-            twiml = VoiceResponse()
-            predictionState = "root"
-            root_question = decisionTree["root"]["question"]
+            if contact_method == 'call':
+                twiml = VoiceResponse()
+                predictionState = "root"
+                root_question = decisionTree["root"]["question"]
 
-            if user_history["fname"]:
-                speech_text = language_mappings[language]['welcome_back'].format(user_history['fname']) + " " + root_question
-            else:
-                speech_text = language_mappings[language]['welcome'] + " " + root_question
+                if user_history["fname"]:
+                    speech_text = language_mappings[language]['welcome_back'].format(user_history['fname']) + " " + root_question
+                else:
+                    speech_text = language_mappings[language]['welcome'] + " " + root_question
 
-            # Generate speech file and get S3 URL
-            s3_url = text_to_speech(speech_text)
-            if s3_url:
-                print(f"Audio data URL: {s3_url[:100]}...")
-                twiml.play(s3_url)
-            else:
-                twiml.say("I'm sorry, I couldn't generate the audio. Let's try again.")
+                # Generate speech file and get S3 URL
+                s3_url = text_to_speech(speech_text, language)
+                if s3_url:
+                    print(f"Audio data URL: {s3_url[:100]}...")
+                    twiml.play(s3_url)
+                else:
+                    twiml.say("I'm sorry, I couldn't generate the audio. Let's try again.")
 
-            gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
-            twiml.append(gather)
+                gather = Gather(input='speech', language=language_mappings[language]['gather_language'], action=f'{ngrok_url}/handle_input', method='POST', speechTimeout=1)
+                twiml.append(gather)
 
-            call = client.calls.create(
-                twiml=str(twiml),
-                to=to_number,
-                from_=twilio_phone_number
-            )
+                call = client.calls.create(
+                    twiml=str(twiml),
+                    to=to_number,
+                    from_=twilio_phone_number
+                )
 
+                # Add the first message to conversation history
+                if call.sid not in conversation_history:
+                    conversation_history[call.sid] = []
+                conversation_history[call.sid].append({"speaker": "ai", "text": speech_text})
 
-            # Add the first message to conversation history
-            if call.sid not in conversation_history:
-                conversation_history[call.sid] = []
-            conversation_history[call.sid].append({"speaker": "ai", "text": speech_text})
-
-
-            # Add the first message to conversation history
-            if call.sid not in conversation_history:
-                conversation_history[call.sid] = []
-            conversation_history[call.sid].append({"speaker": "ai", "text": speech_text})
-
-            logger.info(f"Initiating call to {to_number}. Call SID: {call.sid}")
-            return render_template('call-progress.html', call_sid=call.sid, to_number=to_number)
+                logger.info(f"Initiating call to {to_number}. Call SID: {call.sid}")
+                return render_template('call-progress.html', call_sid=call.sid, to_number=to_number)
+            elif contact_method == 'text':
+                logger.info(f"Initiating text conversation with {to_number}")
+                
+                # Send initial text message
+                message = client.messages.create(
+                    body=language_mappings[language]['welcome'],
+                    from_=twilio_phone_number,
+                    to=to_number
+                )
+                
+                # Add the first message to conversation history
+                if message.sid not in conversation_history:
+                    conversation_history[message.sid] = []
+                conversation_history[message.sid].append({"speaker": "ai", "text": language_mappings[language]['welcome']})
+                
+                logger.info(f"Initiating text conversation with {to_number}. Message SID: {message.sid}")
+                return render_template('text-conversation.html', message_sid=message.sid, to_number=to_number)
         except Exception as e:
-            logger.error(f"Failed to create call: {str(e)}")
-            return f"Failed to create call: {str(e)}", 500
+            logger.error(f"Failed to initiate contact: {str(e)}")
+            return f"Failed to initiate contact: {str(e)}", 500
     
     return render_template('login.html')
+
+@app.route("/sms", methods=['POST'])
+def handle_sms():
+    language = session.get('language', 'en')
+    global predictionState, conversation_history
+    
+    incoming_msg = request.values.get('Body', '').lower()
+    from_number = request.values.get('From', '')
+    
+    user_history = load_user_history(from_number)
+    
+    # Process the incoming message using the same conversation logic
+    try:
+        current_node = decisionTree[predictionState]
+        current_question = current_node["question"]
+        interpreted_response = interpret_response(incoming_msg, current_node)
+        
+        new_user_history = update_user_history(current_question, incoming_msg, user_history)
+        
+        if interpreted_response == "invalid":
+            ai_response = rephrase_question(current_question, incoming_msg, True, new_user_history)
+        else:
+            if interpreted_response in current_node:
+                predictionState = current_node[interpreted_response]
+            else:
+                ai_response = f"{language_mappings[language]['couldnt_understand']} {current_question}"
+            
+            if predictionState not in decisionTree:
+                ai_response = language_mappings[language]['consult_professional'].format(predictionState)
+                finalize_call(user_history)
+            else:
+                next_question = decisionTree[predictionState]["question"]
+                ai_response = rephrase_question(next_question, incoming_msg, False, user_history)
+        
+        save_user_history(from_number, user_history)
+        
+        # Send the response back via SMS
+        resp = MessagingResponse()
+        resp.message(ai_response)
+        
+        return str(resp)
+    
+    except Exception as e:
+        logger.error(f"Error processing SMS: {str(e)}")
+        resp = MessagingResponse()
+        resp.message(language_mappings[language]['error_occurred'])
+        return str(resp)
 
 @app.route("/handle_input", methods=['POST'])
 def handle_input():
@@ -206,7 +266,7 @@ def handle_input():
                     twiml.say(ai_response)
                     twiml.hangup()
                 else:
-                    s3_url = text_to_speech(ai_response)
+                    s3_url = text_to_speech(ai_response, language)
                     if s3_url:
                         twiml.play(s3_url)
                     else:
@@ -246,7 +306,16 @@ def handle_input():
     except Exception as e:
         logger.error(f"Error in handle_input: {str(e)}", exc_info=True)
         twiml = VoiceResponse()
-        twiml.say(language_mappings[language]['error_occurred'])
+        error_message = language_mappings[language]['error_occurred']
+        twiml.say(error_message)
+        
+        # Send a text message to continue the conversation
+        client.messages.create(
+            body=f"{error_message} The call has been disconnected due to unknown issues. Please text this number to continue the conversation.",
+            from_=twilio_phone_number,
+            to=to_number
+        )
+        
         return str(twiml), 500
 
 @app.route('/stream/<call_sid>')

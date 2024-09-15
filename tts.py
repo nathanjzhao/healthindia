@@ -14,6 +14,12 @@ S3_BUCKET_NAME = 'jhubuckethophacks'
 S3_OBJECT_NAME = 'doctor1.mp3'  # Name of the file when uploaded to S3
 S3_REGION = 'us-east-2'  # Ensure this matches your bucket's region
 
+language_voice_map = {
+    'en': 'bIHbv24MWmeRgasZH58o',
+    'hi': '50YSQEDPA2vlOxhCseP4',
+    'ta': 'gCr8TeSJgJaeaIoV4RWH'
+}
+
 # Ensure correct signature version and region are used
 my_config = Config(
     region_name='us-east-2',
@@ -28,14 +34,15 @@ s3_client = boto3.client(
     config=my_config
 )
 
-def text_to_speech(text):
+def text_to_speech(text, language='en'):
     """
     text: str which is our model response
     returns: audio stream with elevenlabs
     """
     # Eleven Labs API setup
     CHUNK_SIZE = 1024
-    url = os.getenv('ELEVEN_API_URL')
+    voice_id = language_voice_map.get(language)
+    url = "https://api.elevenlabs.io/v1/text-to-speech/" + voice_id
 
     headers = {
         "Accept": "audio/mpeg",
@@ -76,15 +83,6 @@ def text_to_speech(text):
             ContentType='audio/mpeg'
         )
         print(f"File uploaded successfully to https://{S3_BUCKET_NAME}.s3.{S3_REGION}.amazonaws.com/{S3_OBJECT_NAME}")
-
-        # print("binary_audio_data: ", binary_audio_data)
-        # Calculate the length of the audio file
-        # with io.BytesIO(binary_audio_data) as audio_file:
-        #     with wave.open(audio_file, 'rb') as wave_file:
-        #         frame_rate = wave_file.getframerate()
-        #         num_frames = wave_file.getnframes()
-        #         duration = num_frames / frame_rate  # Duration in seconds
-        #         print(f"Length of audio file: {duration} seconds")
 
         # Generate a pre-signed URL for the uploaded file
         presigned_url = s3_client.generate_presigned_url(
